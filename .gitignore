@@ -1,0 +1,8 @@
+# private files
+*.pem
+
+# temporary files
+*.swp
+
+# python byte code files
+*.pyc
