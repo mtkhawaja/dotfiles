@@ -13,7 +13,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'https://github.com/gryf/wombat256grf.git' " wombat256grf Theme
 call plug#end()
 
-
 "" General
 syntax on " Turn syntax highlighting on
 set cursorline " Highlight Current Line
@@ -28,7 +27,7 @@ set showcmd " Show command being typed
 "" Indentation 
 set autoindent " Indentation
 set expandtab  " Treat Tabs as Spaces
-set tabstop=4  " Tabs == 4 Spaces
+set tabstop=4  " Tab == 4 Spaces
 set pastetoggle=<F2> " Toggle 'set paste' for copying text from external sources.
 
 "" Folding 

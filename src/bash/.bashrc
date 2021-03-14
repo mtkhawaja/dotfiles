@@ -115,3 +115,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Shorten Directory Path 
+PROMPT_DIRTRIM=2
