@@ -31,6 +31,7 @@
             "fontSize": 13,
             "historySize": 9001,
             "snapOnInput": true,
+            "fontFace": "mononoki Nerd Font",
             "startingDirectory": "E:\\Dev"
         },
         "list": [{
@@ -40,6 +41,7 @@
                 "source": "Windows.Terminal.Wsl",
                 "startingDirectory": "\\\\wsl$\\Ubuntu-20.04\\home\\mtkhawaja",
                 "colorScheme": "One Half Dark",
+                "fontFace": "UbuntuMono Nerd Font",
                 "hidden": false
             },
             {
@@ -48,7 +50,10 @@
                 "name": "PowerShell",
                 "commandline": "pwsh.exe -nologo",
                 "colorScheme": "Tango Dark",
-                "hidden": false
+                "hidden": false,
+                "useAcrylic": true,
+                "acrylicOpacity": 0.85
+
             },
             {
                 // Make changes here to the Command Prompt profile.
