@@ -9,5 +9,5 @@ function install_application() {
 
 application_list="${BASH_SOURCE%/*}/data/application_list.txt"
 while IFS= read -r line; do
-    install_package "$line"
+    install_application "$line"
 done <"$application_list"
