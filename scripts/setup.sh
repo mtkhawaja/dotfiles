@@ -28,7 +28,7 @@ function configure_vim() {
 # Enable globbing for dot files.
 ##################################################
 shopt -s dotglob
-default_copy_destination="$HOME/temp"
+default_copy_destination="$HOME/"
 COPY_DESTINATION=${1:-$default_copy_destination}
 CONFIG_ROOT="${BASH_SOURCE%/*}/../src"
 # shellcheck disable=SC2034  # Unused variables left for readability
