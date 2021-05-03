@@ -120,4 +120,4 @@ fi
 PROMPT_DIRTRIM=2
 
 # Powerline
-eval "$(oh-my-posh --init --shell bash --config ~/.poshthemes/jandedobbeleer.omp.json)"
+eval "$(oh-my-posh --init --shell bash --config ~/.poshthemes/paradox.omp.json)"
