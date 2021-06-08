@@ -116,6 +116,14 @@ if ! shopt -oq posix; then
     fi
 fi
 
+#***************************************************************************************************#
+#********************************************* Custom **********************************************#
+#***************************************************************************************************#
+
+# Required for gpg.
+# Documentation: http://manpages.ubuntu.com/manpages/precise/en/man1/gpg-agent.1.html
+export GPG_TTY=$(tty)
+
 # Shorten Directory Path
 PROMPT_DIRTRIM=2
 
