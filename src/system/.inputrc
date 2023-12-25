@@ -1,4 +1,0 @@
-# Ignore case when auto-completing.
-set completion-ignore-case on
-# One tab instead of two when there are multiple matches.
-set show-all-if-ambiguous on
