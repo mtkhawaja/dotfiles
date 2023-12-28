@@ -57,7 +57,6 @@ fi
 if [[ -z $STOW_FOLDERS ]]; then
   STOW_FOLDERS=(
     "zsh"
-    "foo"
   )
 fi
 
