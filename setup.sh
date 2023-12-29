@@ -18,7 +18,7 @@ function logPending() {
 }
 
 function removeExistingConfigurationFiles() {
-  existing_files_to_remove=$1
+  local existing_files_to_remove="$1"
   for file in "${existing_files_to_remove[@]}"; do
     if [ -f "$file" ]; then
       logPending "Attempting remove existing configuration file: '${file}'"
@@ -28,18 +28,22 @@ function removeExistingConfigurationFiles() {
       logSuccess "'${file}' does not exist. Nothing to remove."
     fi
   done
+  log ""
 }
 
 function stowDotfiles() {
-  stow_folders=$1
-  dotfiles_home=$2
-  pushd "$dotfiles_home" || logFailureAndExit "Failed to change directory to: '${dotfiles_home}'"
+  local dotfiles_home="$1"
+  local stow_folders=("${@:2}")
+  pushd "$dotfiles_home" >/dev/null || logFailureAndExit "Failed to change directory to: '${dotfiles_home}'"
   for folder in "${stow_folders[@]}"; do
-    logPending "Attempting to un-stow and stow: '${folder}'"
-    stow -D "${folder}"
-    stow "${folder}" && logSuccess "Successfully un-stowed and stowed: '${folder}'"
+    logPending "Attempting un-stow: '${folder}'"
+    stow -D "${folder}" || logFailureAndExit "Failed to un-stow: '${folder}'"
+    logPending "Attempting stow: '${folder}'"
+    stow "${folder}" || logFailureAndExit "Failed to stow: '${folder}'"
+    logSuccess "Successfully stowed: '${folder}'"
+    log ""
   done
-  popd || logFailureAndExit "Failed to change directory to previous directory"
+  popd >/dev/null || logFailureAndExit "Failed to change directory to previous directory"
 }
 
 # Main
@@ -60,12 +64,15 @@ if [[ -z $STOW_FOLDERS ]]; then
     "bin"
   )
 fi
-
+log ""
+log "--------------------------------------------------------------------------------"
 log "Starting dotfiles setup..."
 log "Logging to: '${LOG_FILE}'"
 log "Dotfiles home: '${DOTFILES_HOME}'"
 log "Configuration files to remove: '${CONFIG_FILES_TO_REMOVE[*]}'"
 log "Stow folders: '${STOW_FOLDERS[*]}'"
+log "--------------------------------------------------------------------------------"
+log ""
 removeExistingConfigurationFiles "${CONFIG_FILES_TO_REMOVE[@]}"
-stowDotfiles "${STOW_FOLDERS[@]}" "${DOTFILES_HOME}"
+stowDotfiles "${DOTFILES_HOME}" "${STOW_FOLDERS[@]}"
 exit 0
