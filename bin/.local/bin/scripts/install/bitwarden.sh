@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BITWARDEN_HOME=${BITWARDEN_HOME:-"$HOME/.dotfiles/bin/.local/bin/tools/bitwarden"}
+BITWARDEN_HOME=${BITWARDEN_HOME:-"$HOME/.local/bin/tools/bitwarden"}
 BITWARDEN_HOME_BIN="$BITWARDEN_HOME/bin"
 rm -rf "$BITWARDEN_HOME"
 mkdir -p "$BITWARDEN_HOME_BIN"
