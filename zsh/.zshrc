@@ -98,7 +98,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias t="tmux"
+alias t="tmux -2"
+alias tmux="tmux -2"
 alias f="fzf"
 alias e="nvim"
 alias vim="nvim"

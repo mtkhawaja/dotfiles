@@ -10,6 +10,7 @@
 # Environment Variables
 ############################
 
+export TZ="America/New_York"
 export LANG="en_US.UTF-8"
 # Used by `less` to display line numbers without having to type `-N` every time.
 export LESS="-N"
