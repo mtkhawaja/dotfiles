@@ -10,6 +10,7 @@
 # Environment Variables
 ############################
 
+export LANG="en_US.UTF-8"
 # Used by `less` to display line numbers without having to type `-N` every time.
 export LESS="-N"
 # Path to your oh-my-zsh installation.
