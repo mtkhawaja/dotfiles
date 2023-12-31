@@ -16,10 +16,19 @@ export LESS="-N"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# Java
+export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which javac))))"
+export M2_HOME="$HOME/.local/bin/tools/apache-maven"
+
+# Other Tools
+export BITWARDEN_HOME="$HOME/.local/bin/tools/bitwarden"
+
 ############################
 # PATH Variable Setup
 ############################
 
 path+=("$HOME/.local/bin/scripts/utility")
 path+=("$HOME/.local/bin/tools/bitwarden/bin")
+path+=("$JAVA_HOME")
+path+=("$M2_HOME/bin")
 export PATH

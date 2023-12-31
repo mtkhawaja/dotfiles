@@ -11,4 +11,4 @@ fi
 
 echo "Attempting to make '$TARGET_FILE' executable"
 git add --chmod=+x -- "$TARGET_FILE"
-git commit -m "Updated permissions to make '$TARGET_FILE' executable"
+git commit -m "Updated permissions to make '$TARGET_FILE' executable" -- "$TARGET_FILE"

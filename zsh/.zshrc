@@ -104,7 +104,10 @@ alias e="nvim"
 alias vim="nvim"
 alias vi="nvim"
 alias oldvim="vim"
-
+# Java
+alias java8="/usr/lib/jvm/temurin-8-jdk-amd64/bin/java"
+alias java17="/usr/lib/jvm/temurin-17-jdk-amd64/bin/java"
+alias java21="/usr/lib/jvm/temurin-21-jdk-amd64/bin/java"
 ############################
 # Editor
 ############################
