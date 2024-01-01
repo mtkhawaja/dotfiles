@@ -18,7 +18,7 @@ function logPending() {
 }
 
 function removeExistingConfigurationFiles() {
-  local existing_files_to_remove="$1"
+  local existing_files_to_remove=("${@}")
   for file in "${existing_files_to_remove[@]}"; do
     if [ -f "$file" ]; then
       logPending "Attempting remove existing configuration file: '${file}'"
