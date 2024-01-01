@@ -1,0 +1,25 @@
+[user]
+    email = 36654508+mtkhawaja@users.noreply.github.com
+    name = Muneeb Khawaja
+
+[core]
+	editor = nvim
+    excludesfile = ~/.gitignore_global
+	autocrlf = false
+
+[color "branch"]
+    current = green bold
+    local = yellow
+    remote = blue
+
+[commit]
+    verbose = true
+
+[diff]
+	tool = nvimdiff
+
+[merge]
+	tool = nvimdiff
+
+[init]
+    defaultBranch = main

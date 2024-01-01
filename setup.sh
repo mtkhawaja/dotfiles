@@ -64,6 +64,7 @@ if [[ -z $STOW_FOLDERS ]]; then
     "bin"
     "nvim"
     "tmux"
+    "git"
   )
 fi
 log ""

@@ -117,6 +117,7 @@ alias t="tmux -2"
 alias tmux="tmux -2"
 alias f="fzf"
 alias e="nvim"
+alias nvimdiff='nvim -d'
 alias vim="nvim"
 alias vi="nvim"
 alias oldvim="vim"
