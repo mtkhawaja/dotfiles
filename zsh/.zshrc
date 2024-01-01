@@ -75,7 +75,21 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(z git zsh-autosuggestions zsh-syntax-highlighting)
+# Browser Standard Plugins on GitHub: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
+plugins=(
+    "z"
+    "git"
+    "zsh-autosuggestions"
+    "zsh-syntax-highlighting"
+    "colored-man-pages"
+    "ssh-agent"
+    "docker"
+    "docker-compose"
+    "mvn"
+    "node"
+    "npm"
+    "tmux"
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -98,6 +112,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+alias c="clear"
 alias t="tmux -2"
 alias tmux="tmux -2"
 alias f="fzf"
