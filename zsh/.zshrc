@@ -133,3 +133,8 @@ if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='nvim'
 fi
 
+############################
+# Auto Completion
+############################
+
+eval "$(bw completion --shell zsh); compdef _bw bw;"
