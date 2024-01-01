@@ -55,6 +55,9 @@ if [[ -z $CONFIG_FILES_TO_REMOVE ]]; then
   CONFIG_FILES_TO_REMOVE=(
     # .oh-my-zsh automatically creates a .zshrc file
     "$HOME/.zshrc"
+    "$HOME/.zshenv"
+    "$HOME/.gitconfig"
+    "$HOME/.gitignore_global"
   )
 fi
 
