@@ -77,6 +77,7 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 # Browser Standard Plugins on GitHub: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
 plugins=(
+    "fzf"
     "z"
     "git"
     "zsh-autosuggestions"
