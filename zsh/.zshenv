@@ -13,7 +13,7 @@
 export TZ="America/New_York"
 export LANG="en_US.UTF-8"
 # Used by `less` to display line numbers without having to type `-N` every time.
-export LESS="-N -C -M -I -j 10 -# 4"
+export LESS="-R -N -C -M -I -j 10 -# 4"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
