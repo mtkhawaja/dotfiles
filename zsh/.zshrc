@@ -140,3 +140,10 @@ fi
 ############################
 
 eval "$(bw completion --shell zsh); compdef _bw bw;"
+
+############################
+# Key Bindings Completion
+############################
+
+# Ctrl + Space for zsh auto-completion
+bindkey '^ ' autosuggest-accept
