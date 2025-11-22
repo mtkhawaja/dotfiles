@@ -122,10 +122,6 @@ alias nvimdiff='nvim -d'
 alias vim="nvim"
 alias vi="nvim"
 alias oldvim="vim"
-# Java
-alias java8="/usr/lib/jvm/temurin-8-jdk-amd64/bin/java"
-alias java17="/usr/lib/jvm/temurin-17-jdk-amd64/bin/java"
-alias java21="/usr/lib/jvm/temurin-21-jdk-amd64/bin/java"
 ############################
 # Editor
 ############################
@@ -134,12 +130,6 @@ alias java21="/usr/lib/jvm/temurin-21-jdk-amd64/bin/java"
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='nvim'
 fi
-
-############################
-# Auto Completion
-############################
-
-eval "$(bw completion --shell zsh); compdef _bw bw;"
 
 ############################
 # Key Bindings Completion

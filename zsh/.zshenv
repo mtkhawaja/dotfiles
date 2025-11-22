@@ -21,19 +21,17 @@ export ZSH="$HOME/.oh-my-zsh"
 # Documentation: http://manpages.ubuntu.com/manpages/precise/en/man1/gpg-agent.1.html
 export GPG_TTY=$(tty)
 
-# Java
-export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which javac))))"
-export M2_HOME="$HOME/.local/bin/tools/apache-maven"
-
-# Other Tools
-export BITWARDEN_HOME="$HOME/.local/bin/tools/bitwarden"
-
 ############################
 # PATH Variable Setup
 ############################
 
 path+=("$HOME/.local/bin/scripts/utility")
-path+=("$HOME/.local/bin/tools/bitwarden/bin")
-path+=("$JAVA_HOME")
-path+=("$M2_HOME/bin")
+
+# Created by `pipx` on 2025-11-22 05:32:57
+export PATH="$PATH:/Users/mtkhawaja/.local/bin"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
 export PATH
