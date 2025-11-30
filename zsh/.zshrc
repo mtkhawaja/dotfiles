@@ -134,6 +134,7 @@ fi
 ############################
 # Key Bindings Completion
 ############################
+export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 
 # Ctrl + Space for zsh auto-completion
 bindkey '^ ' autosuggest-accept
