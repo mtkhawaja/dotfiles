@@ -1,6 +1,7 @@
 [user]
     email = 36654508+mtkhawaja@users.noreply.github.com
     name = Muneeb Khawaja
+	signingkey = 535C84F6751CC5C4
 
 [core]
 	editor = nvim
@@ -18,6 +19,7 @@
 
 [commit]
     verbose = true
+	gpgsign = true
 
 [diff]
     tool = nvimdiff
@@ -65,3 +67,5 @@
     last = log -1 HEAD
     fp = fetch --prune
     rv = remote -v
+[tag]
+	gpgSign = true

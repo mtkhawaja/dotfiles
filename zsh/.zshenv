@@ -46,4 +46,5 @@ eval "$(pyenv init - zsh)"
 
 export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 
+export GPG_TTY=$(tty)
 export PATH

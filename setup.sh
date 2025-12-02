@@ -73,6 +73,7 @@ function main() {
   if [[ -z ${CONFIG_FILES_TO_REMOVE+x} ]]; then
     CONFIG_FILES_TO_REMOVE=(
       "$HOME/.zshrc"
+      "$HOME/.gnupg/gpg-agent.conf"
       "$HOME/.zshenv"
       "$HOME/.gitconfig"
       "$HOME/.gitignore_global"
@@ -86,6 +87,7 @@ function main() {
       "nvim"
       "tmux"
       "git"
+      "gnupg"
     )
   fi
 
