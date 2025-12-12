@@ -3532,3 +3532,6 @@ auto-update =
 # This only works on macOS since only macOS has an auto-update feature.
 auto-update-channel =
 
+# https://ghostty.org/docs/help/terminfo#ssh
+shell-integration-features = ssh-terminfo
+shell-integration-features = ssh-env
