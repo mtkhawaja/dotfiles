@@ -88,6 +88,7 @@ function main() {
       "tmux"
       "git"
       "gnupg"
+      "aerospace"
     )
   fi
 
