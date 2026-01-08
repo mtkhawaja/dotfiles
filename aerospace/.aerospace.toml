@@ -202,6 +202,98 @@ on-mode-changed = []
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-shift-semicolon = 'mode service'
 
+# C = Communication
+[[on-window-detected]]
+    if.app-id = 'com.hnc.Discord'
+    run = ['move-node-to-workspace C', 'layout accordion']
+[[on-window-detected]]
+    if.app-id = 'net.whatsapp.WhatsApp'
+    run = ['move-node-to-workspace C', 'layout accordion']
+[[on-window-detected]]
+    if.app-id = 'com.apple.MobileSMS'
+    run = ['move-node-to-workspace C', 'layout accordion']
+
+# E = Email
+[[on-window-detected]]
+    if.app-id = 'com.apple.mail'
+    run = 'move-node-to-workspace E'
+
+# F = Files / Finder
+[[on-window-detected]]
+    if.app-id = 'com.apple.finder'
+    run = 'move-node-to-workspace F'
+
+# I = IDE Workspace
+[[on-window-detected]]
+    if.app-id = 'com.jetbrains.intellij'
+    run = 'move-node-to-workspace I'
+[[on-window-detected]]
+    if.app-id = 'com.jetbrains.pycharm'
+    run = 'move-node-to-workspace I'
+[[on-window-detected]]
+    if.app-id = 'com.jetbrains.datagrip'
+    run = 'move-node-to-workspace I'
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.VSCode'
+    run = 'move-node-to-workspace I'
+
+# T = Terminal / Tooling / Testing
+[[on-window-detected]]
+    if.app-id = 'com.mitchellh.ghostty'
+    run = 'move-node-to-workspace T'
+[[on-window-detected]]
+    if.app-id = 'com.apple.Terminal'
+    run = 'move-node-to-workspace T'
+[[on-window-detected]]
+    if.app-id = 'com.insomnia.app'
+    run = 'move-node-to-workspace I'
+
+# L = LLM / AI Tooling
+[[on-window-detected]]
+    if.app-id = 'com.openai.chat'
+    run = 'move-node-to-workspace L'
+
+# M = Media
+[[on-window-detected]]
+    if.app-id = 'com.spotify.client'
+    run = 'move-node-to-workspace M'
+
+# N = Notes
+[[on-window-detected]]
+    if.app-id = 'md.obsidian'
+    run = 'move-node-to-workspace N'
+[[on-window-detected]]
+    if.app-id = 'com.apple.Notes'
+    run = 'move-node-to-workspace N'
+
+# S = System Settings / Secrets / Rare
+[[on-window-detected]]
+    if.app-id = 'com.bitwarden.desktop'
+    run = 'move-node-to-workspace S'
+[[on-window-detected]]
+    if.app-id = 'com.apple.AppStore'
+    run = 'move-node-to-workspace S'
+[[on-window-detected]]
+    if.app-id = 'com.apple.systempreferences'
+    run = 'move-node-to-workspace S'
+[[on-window-detected]]
+    if.app-id = 'com.apple.ActivityMonitor'
+    run = 'move-node-to-workspace S'
+
+# W = Web browser(s)
+[[on-window-detected]]
+    if.app-id = 'com.google.Chrome'
+    run = 'move-node-to-workspace W'
+[[on-window-detected]]
+    if.app-id = 'org.mozilla.firefox'
+    run = 'move-node-to-workspace W'
+[[on-window-detected]]
+    if.app-id = 'com.apple.Safari'
+    run = 'move-node-to-workspace W'
+[[on-window-detected]]
+    if.app-id = 'com.openai.atlas.web'
+    run = 'move-node-to-workspace W'
+
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
