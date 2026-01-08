@@ -7,10 +7,17 @@ config-version = 2
 
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+after-startup-command = [
+   "move-workspace-to-monitor --workspace L '[secondary, main]'",
+   "move-workspace-to-monitor --workspace M '[secondary, main]'",
+   "move-workspace-to-monitor --workspace N '[secondary, main]'",
+   "move-workspace-to-monitor --workspace C '[secondary, main]'",
+   "summon-workspace I"
+]
 
 # Start AeroSpace at login
-start-at-login = false
+start-at-login = true
+
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
