@@ -8,11 +8,7 @@ config-version = 2
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-   "move-workspace-to-monitor --workspace L '[secondary, main]'",
-   "move-workspace-to-monitor --workspace M '[secondary, main]'",
-   "move-workspace-to-monitor --workspace N '[secondary, main]'",
-   "move-workspace-to-monitor --workspace C '[secondary, main]'",
-   "summon-workspace I"
+   "summon-workspace Development"
 ]
 
 # Start AeroSpace at login
@@ -52,14 +48,42 @@ automatically-unhide-macos-hidden-apps = false
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B",
-                         "C", "D", "E", "F", "G", "I", "M", "N", "O", "P", "Q",
-                         "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+persistent-workspaces = [
+    "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "Apple",
+    "Bitwarden",
+    "Communication",
+    "Development",
+    "Email",
+    "F",
+    "G",
+    "I",
+    "Media",
+    "Notes",
+    "O",
+    "P",
+    "Q",
+    "Research",
+    "S",
+    "Tools",
+    "U",
+    "V",
+    "Web",
+    "Y"
+]
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 on-mode-changed = []
+
+
+[workspace-to-monitor-force-assignment]
+    Research = ['secondary', 'main']
+    Media = ['secondary', 'main']
+    Notes = ['secondary', 'main']
+    Tools = ['secondary', 'main']
+    Communication = ['secondary', 'main']
 
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -119,6 +143,14 @@ on-mode-changed = []
     alt-slash = 'layout tiles horizontal vertical'
     alt-comma = 'layout accordion horizontal vertical'
 
+    # Focus monitor
+    alt-z = 'focus-monitor left'
+    alt-x = 'focus-monitor right'
+
+    # Move focused window to monitor
+    alt-shift-z = 'move-node-to-monitor left'
+    alt-shift-x = 'move-node-to-monitor right'
+
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
     alt-h = 'focus left'
     alt-j = 'focus down'
@@ -145,28 +177,26 @@ on-mode-changed = []
     alt-7 = 'workspace 7'
     alt-8 = 'workspace 8'
     alt-9 = 'workspace 9'
-    alt-a = 'workspace A' # In your config, you can drop workspace bindings that you don't need
-    alt-b = 'workspace B'
-    alt-c = 'workspace C'
-    alt-d = 'workspace D'
-    alt-e = 'workspace E'
+    alt-a = 'workspace Apple'
+    alt-b = 'workspace Bitwarden'
+    alt-c = 'workspace Communication'
+    alt-d = 'workspace Development'
+    alt-e = 'workspace Email'
     alt-f = 'workspace F'
     alt-g = 'workspace G'
     alt-i = 'workspace I'
-    alt-m = 'workspace M'
-    alt-n = 'workspace N'
+    alt-m = 'workspace Media'
+    alt-n = 'workspace Notes'
     alt-o = 'workspace O'
     alt-p = 'workspace P'
     alt-q = 'workspace Q'
-    alt-r = 'workspace R'
+    alt-r = 'workspace Research'
     alt-s = 'workspace S'
-    alt-t = 'workspace T'
+    alt-t = 'workspace Tools'
     alt-u = 'workspace U'
     alt-v = 'workspace V'
-    alt-w = 'workspace W'
-    alt-x = 'workspace X'
+    alt-w = 'workspace Web'
     alt-y = 'workspace Y'
-    alt-z = 'workspace Z'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 1'
@@ -178,28 +208,26 @@ on-mode-changed = []
     alt-shift-7 = 'move-node-to-workspace 7'
     alt-shift-8 = 'move-node-to-workspace 8'
     alt-shift-9 = 'move-node-to-workspace 9'
-    alt-shift-a = 'move-node-to-workspace A'
-    alt-shift-b = 'move-node-to-workspace B'
-    alt-shift-c = 'move-node-to-workspace C'
-    alt-shift-d = 'move-node-to-workspace D'
-    alt-shift-e = 'move-node-to-workspace E'
+    alt-shift-a = 'move-node-to-workspace Apple'
+    alt-shift-b = 'move-node-to-workspace Bitwarden'
+    alt-shift-c = 'move-node-to-workspace Communication'
+    alt-shift-d = 'move-node-to-workspace Development'
+    alt-shift-e = 'move-node-to-workspace Email'
     alt-shift-f = 'move-node-to-workspace F'
     alt-shift-g = 'move-node-to-workspace G'
     alt-shift-i = 'move-node-to-workspace I'
-    alt-shift-m = 'move-node-to-workspace M'
-    alt-shift-n = 'move-node-to-workspace N'
+    alt-shift-m = 'move-node-to-workspace Media'
+    alt-shift-n = 'move-node-to-workspace Notes'
     alt-shift-o = 'move-node-to-workspace O'
     alt-shift-p = 'move-node-to-workspace P'
     alt-shift-q = 'move-node-to-workspace Q'
-    alt-shift-r = 'move-node-to-workspace R'
+    alt-shift-r = 'move-node-to-workspace Research'
     alt-shift-s = 'move-node-to-workspace S'
-    alt-shift-t = 'move-node-to-workspace T'
+    alt-shift-t = 'move-node-to-workspace Tools'
     alt-shift-u = 'move-node-to-workspace U'
     alt-shift-v = 'move-node-to-workspace V'
-    alt-shift-w = 'move-node-to-workspace W'
-    alt-shift-x = 'move-node-to-workspace X'
+    alt-shift-w = 'move-node-to-workspace Web'
     alt-shift-y = 'move-node-to-workspace Y'
-    alt-shift-z = 'move-node-to-workspace Z'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
@@ -209,102 +237,102 @@ on-mode-changed = []
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-shift-semicolon = 'mode service'
 
+# A = Apple / System Settings
+[[on-window-detected]]
+    if.app-id = 'com.apple.AppStore'
+    run = 'move-node-to-workspace Apple'
+[[on-window-detected]]
+    if.app-id = 'com.apple.systempreferences'
+    run = 'move-node-to-workspace Apple'
+[[on-window-detected]]
+    if.app-id = 'com.apple.ActivityMonitor'
+    run = 'move-node-to-workspace Apple'
+
+# B = Bitwarden
+[[on-window-detected]]
+    if.app-id = 'com.bitwarden.desktop'
+    run = 'move-node-to-workspace Bitwarden'
+
 # C = Communication
+
 [[on-window-detected]]
     if.app-id = 'com.hnc.Discord'
-    run = ['move-node-to-workspace C', 'layout accordion']
+    run = ['layout tiling', 'move-node-to-workspace Communication']
+
 [[on-window-detected]]
     if.app-id = 'net.whatsapp.WhatsApp'
-    run = ['move-node-to-workspace C', 'layout accordion']
+    run = ['layout tiling', 'move-node-to-workspace Communication']
 [[on-window-detected]]
     if.app-id = 'com.apple.MobileSMS'
-    run = ['move-node-to-workspace C', 'layout accordion']
+    run = ['layout tiling', 'move-node-to-workspace Communication']
 
 # E = Email
 [[on-window-detected]]
     if.app-id = 'com.apple.mail'
-    run = 'move-node-to-workspace E'
+    run = 'move-node-to-workspace Email'
 
-# F = Files / Finder
-[[on-window-detected]]
-    if.app-id = 'com.apple.finder'
-    run = 'move-node-to-workspace F'
-
-# I = IDE Workspace
+# D = Development
 [[on-window-detected]]
     if.app-id = 'com.jetbrains.intellij'
-    run = 'move-node-to-workspace I'
+    run = 'move-node-to-workspace Development'
 [[on-window-detected]]
     if.app-id = 'com.jetbrains.pycharm'
-    run = 'move-node-to-workspace I'
+    run = 'move-node-to-workspace Development'
 [[on-window-detected]]
     if.app-id = 'com.jetbrains.datagrip'
-    run = 'move-node-to-workspace I'
+    run = 'move-node-to-workspace Development'
 [[on-window-detected]]
     if.app-id = 'com.microsoft.VSCode'
-    run = 'move-node-to-workspace I'
-
-# T = Terminal / Tooling / Testing
-[[on-window-detected]]
-    if.app-id = 'com.mitchellh.ghostty'
-    run = 'move-node-to-workspace T'
-[[on-window-detected]]
-    if.app-id = 'com.apple.Terminal'
-    run = 'move-node-to-workspace T'
-[[on-window-detected]]
-    if.app-id = 'com.insomnia.app'
-    run = 'move-node-to-workspace I'
-
-# L = LLM / AI Tooling
-[[on-window-detected]]
-    if.app-id = 'com.openai.chat'
-    run = 'move-node-to-workspace L'
+    run = 'move-node-to-workspace Development'
 
 # M = Media
 [[on-window-detected]]
     if.app-id = 'com.spotify.client'
-    run = 'move-node-to-workspace M'
+    run = 'move-node-to-workspace Media'
 
 # N = Notes
 [[on-window-detected]]
-    if.app-id = 'md.obsidian'
-    run = 'move-node-to-workspace N'
-[[on-window-detected]]
     if.app-id = 'com.apple.Notes'
-    run = 'move-node-to-workspace N'
+    run = 'move-node-to-workspace Notes'
 
-# S = System Settings / Secrets / Rare
+# R = Research
 [[on-window-detected]]
-    if.app-id = 'com.bitwarden.desktop'
-    run = 'move-node-to-workspace S'
+    if.app-id = 'md.obsidian'
+    run = 'move-node-to-workspace Research'
 [[on-window-detected]]
-    if.app-id = 'com.apple.AppStore'
-    run = 'move-node-to-workspace S'
-[[on-window-detected]]
-    if.app-id = 'com.apple.systempreferences'
-    run = 'move-node-to-workspace S'
-[[on-window-detected]]
-    if.app-id = 'com.apple.ActivityMonitor'
-    run = 'move-node-to-workspace S'
+    if.app-id = 'com.openai.chat'
+    run = 'move-node-to-workspace Research'
 
-# W = Web browser(s)
+# T = Terminal / Tooling / Testing
+[[on-window-detected]]
+    if.app-id = 'com.mitchellh.ghostty'
+    run = 'move-node-to-workspace Tools'
+[[on-window-detected]]
+    if.app-id = 'com.apple.Terminal'
+    run = 'move-node-to-workspace Tools'
+[[on-window-detected]]
+    if.app-id = 'com.insomnia.app'
+    run = 'move-node-to-workspace Tools'
+
+# W = Web
 [[on-window-detected]]
     if.app-id = 'com.google.Chrome'
-    run = 'move-node-to-workspace W'
+    run = 'move-node-to-workspace Web'
 [[on-window-detected]]
     if.app-id = 'org.mozilla.firefox'
-    run = 'move-node-to-workspace W'
+    run = 'move-node-to-workspace Web'
 [[on-window-detected]]
     if.app-id = 'com.apple.Safari'
-    run = 'move-node-to-workspace W'
+    run = 'move-node-to-workspace Web'
 [[on-window-detected]]
     if.app-id = 'com.openai.atlas.web'
-    run = 'move-node-to-workspace W'
+    run = 'move-node-to-workspace Web'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
     esc = ['reload-config', 'mode main']
+    b = ['balance-sizes', 'mode main']
     r = ['flatten-workspace-tree', 'mode main'] # reset layout
     f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
