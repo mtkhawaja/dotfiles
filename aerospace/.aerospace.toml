@@ -7,8 +7,15 @@ config-version = 2
 
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
+
+
 after-startup-command = [
-   "summon-workspace Development"
+    "move-workspace-to-monitor --workspace Research '[secondary, main]'",
+    "move-workspace-to-monitor --workspace Media '[secondary, main]'",
+    "move-workspace-to-monitor --workspace Notes '[secondary, main]'",
+    "move-workspace-to-monitor --workspace Tools '[secondary, main]'",
+    "move-workspace-to-monitor --workspace Communication '[secondary, main]'",
+    "summon-workspace Development"
 ]
 
 # Start AeroSpace at login
@@ -76,14 +83,6 @@ persistent-workspaces = [
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 on-mode-changed = []
-
-
-[workspace-to-monitor-force-assignment]
-    Research = ['secondary', 'main']
-    Media = ['secondary', 'main']
-    Notes = ['secondary', 'main']
-    Tools = ['secondary', 'main']
-    Communication = ['secondary', 'main']
 
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -168,35 +167,35 @@ on-mode-changed = []
     alt-equal = 'resize smart +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-1 = 'workspace 1'
-    alt-2 = 'workspace 2'
-    alt-3 = 'workspace 3'
-    alt-4 = 'workspace 4'
-    alt-5 = 'workspace 5'
-    alt-6 = 'workspace 6'
-    alt-7 = 'workspace 7'
-    alt-8 = 'workspace 8'
-    alt-9 = 'workspace 9'
-    alt-a = 'workspace Apple'
-    alt-b = 'workspace Bitwarden'
-    alt-c = 'workspace Communication'
-    alt-d = 'workspace Development'
-    alt-e = 'workspace Email'
-    alt-f = 'workspace F'
-    alt-g = 'workspace G'
-    alt-i = 'workspace I'
-    alt-m = 'workspace Media'
-    alt-n = 'workspace Notes'
-    alt-o = 'workspace O'
-    alt-p = 'workspace P'
-    alt-q = 'workspace Q'
-    alt-r = 'workspace Research'
-    alt-s = 'workspace S'
-    alt-t = 'workspace Tools'
-    alt-u = 'workspace U'
-    alt-v = 'workspace V'
-    alt-w = 'workspace Web'
-    alt-y = 'workspace Y'
+    alt-1 = 'summon-workspace 1'
+    alt-2 = 'summon-workspace 2'
+    alt-3 = 'summon-workspace 3'
+    alt-4 = 'summon-workspace 4'
+    alt-5 = 'summon-workspace 5'
+    alt-6 = 'summon-workspace 6'
+    alt-7 = 'summon-workspace 7'
+    alt-8 = 'summon-workspace 8'
+    alt-9 = 'summon-workspace 9'
+    alt-a = 'summon-workspace Apple'
+    alt-b = 'summon-workspace Bitwarden'
+    alt-c = 'summon-workspace Communication'
+    alt-d = 'summon-workspace Development'
+    alt-e = 'summon-workspace Email'
+    alt-f = 'summon-workspace F'
+    alt-g = 'summon-workspace G'
+    alt-i = 'summon-workspace I'
+    alt-m = 'summon-workspace Media'
+    alt-n = 'summon-workspace Notes'
+    alt-o = 'summon-workspace O'
+    alt-p = 'summon-workspace P'
+    alt-q = 'summon-workspace Q'
+    alt-r = 'summon-workspace Research'
+    alt-s = 'summon-workspace S'
+    alt-t = 'summon-workspace Tools'
+    alt-u = 'summon-workspace U'
+    alt-v = 'summon-workspace V'
+    alt-w = 'summon-workspace Web'
+    alt-y = 'summon-workspace Y'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 1'
@@ -225,7 +224,6 @@ on-mode-changed = []
     alt-shift-s = 'move-node-to-workspace S'
     alt-shift-t = 'move-node-to-workspace Tools'
     alt-shift-u = 'move-node-to-workspace U'
-    alt-shift-v = 'move-node-to-workspace V'
     alt-shift-w = 'move-node-to-workspace Web'
     alt-shift-y = 'move-node-to-workspace Y'
 
