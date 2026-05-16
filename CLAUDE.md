@@ -12,14 +12,10 @@ whose contents get symlinked into `$HOME`.
 ```bash
 # Symlink all dotfiles (un-stows then re-stows each package)
 ./setup.sh
-
-# Ghostty requires a separate script — it targets ~/Library/Application Support, not $HOME
-./install_ghostty_config.sh
 ```
 
-`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `gnupg`, `aerospace`, `ccstatusline`. Both scripts
-support
-overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`).
+`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `gnupg`, `aerospace`, `ccstatusline`, `ghostty`.
+Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`).
 
 ## Package Layout
 
@@ -28,7 +24,7 @@ overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOV
 | `zsh/`          | `~/.zshenv`, `~/.zshrc`                                                       | oh-my-zsh; env vars in `.zshenv`, aliases/plugins in `.zshrc`                      |
 | `git/`          | `~/.gitconfig`, `~/.gitignore_global`                                         | Supports conditional includes via `includeIf` for per-directory overrides          |
 | `aerospace/`    | `~/.aerospace.toml`                                                           | AeroSpace tiling WM; workspaces named by purpose, app-id rules auto-assign windows |
-| `ghostty/`      | `~/Library/Application Support/com.mitchellh.ghostty/` + `~/.config/ghostty/` | Config + themes stowed separately via `install_ghostty_config.sh`                  |
+| `ghostty/`      | `~/.config/ghostty/`                                                           | XDG path; stowed via standard `setup.sh` like all other packages                  |
 | `tmux/`         | `~/.tmux.conf`                                                                | Minimal config; always launched with `-2` flag for 256-color                       |
 | `nvim/`         | `~/.config/nvim/`                                                             | Git submodule pointing to `https://github.com/mtkhawaja/nvim-config.git`           |
 | `gnupg/`        | `~/.gnupg/gpg-agent.conf`                                                     | GPG agent config                                                                   |
@@ -46,7 +42,7 @@ overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOV
 
 1. Create a directory at the repo root with the files in their relative-to-`$HOME` paths.
 2. Add it to `STOW_FOLDERS` in `setup.sh` (or stow it manually: `stow <package>`).
-3. If the target directory is not `$HOME` (like ghostty), write a dedicated install script.
+3. If the target directory is not `$HOME`, write a dedicated install script.
 
 ## AeroSpace Notes
 

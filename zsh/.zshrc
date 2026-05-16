@@ -66,6 +66,19 @@ ZSH_THEME="robbyrussell"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+
+############################
+# Ghostty
+# https://github.com/ghostty-org/ghostty/blob/main/src/shell-integration/README.md
+############################
+
+# https://ghostty.org/docs/features/shell-integration#manual-shell-integration-setup
+
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+  source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
+fi
+
+
 ############################
 # Plugins
 ############################

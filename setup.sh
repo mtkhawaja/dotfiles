@@ -90,6 +90,7 @@ function main() {
       "gnupg"
       "aerospace"
       "ccstatusline"
+      "ghostty"
     )
   fi
 
