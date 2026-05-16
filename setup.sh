@@ -89,6 +89,7 @@ function main() {
       "git"
       "gnupg"
       "aerospace"
+      "ccstatusline"
     )
   fi
 

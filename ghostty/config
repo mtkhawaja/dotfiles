@@ -3535,3 +3535,11 @@ auto-update-channel =
 # https://ghostty.org/docs/help/terminfo#ssh
 shell-integration-features = ssh-terminfo
 shell-integration-features = ssh-env
+
+
+font-size = 18
+cursor-color = cell-foreground
+bold-color = bright
+macos-titlebar-style = tabs
+window-step-resize = true
+copy-on-select = clipboard
