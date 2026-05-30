@@ -19,17 +19,17 @@ Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES
 
 ## Package Layout
 
-| Directory       | Symlink target                                                                | Notes                                                                              |
-|-----------------|-------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| `zsh/`          | `~/.zshenv`, `~/.zshrc`                                                       | oh-my-zsh; env vars in `.zshenv`, aliases/plugins in `.zshrc`                      |
-| `git/`          | `~/.gitconfig`, `~/.gitignore_global`                                         | Supports conditional includes via `includeIf` for per-directory overrides          |
-| `aerospace/`    | `~/.aerospace.toml`                                                           | AeroSpace tiling WM; workspaces named by purpose, app-id rules auto-assign windows |
-| `ghostty/`      | `~/.config/ghostty/`                                                           | XDG path; stowed via standard `setup.sh` like all other packages                  |
-| `tmux/`         | `~/.tmux.conf`                                                                | Minimal config; always launched with `-2` flag for 256-color                       |
-| `nvim/`         | `~/.config/nvim/`                                                             | Git submodule pointing to `https://github.com/mtkhawaja/nvim-config.git`           |
-| `gnupg/`        | `~/.gnupg/gpg-agent.conf`                                                     | GPG agent config                                                                   |
-| `bin/`          | `~/.local/bin/`                                                               | Custom shell scripts; `utility/` scripts are on `$PATH` via `.zshenv`              |
-| `ccstatusline/` | `~/.config/ccstatusline/settings.json`                                        | Claude Code status line config (ccstatusline)                                      |
+| Directory       | Symlink target                         | Notes                                                                              |
+|-----------------|----------------------------------------|------------------------------------------------------------------------------------|
+| `zsh/`          | `~/.zshenv`, `~/.zshrc`                | oh-my-zsh; env vars in `.zshenv`, aliases/plugins in `.zshrc`                      |
+| `git/`          | `~/.gitconfig`, `~/.gitignore_global`  | Supports conditional includes via `includeIf` for per-directory overrides          |
+| `aerospace/`    | `~/.aerospace.toml`                    | AeroSpace tiling WM; workspaces named by purpose, app-id rules auto-assign windows |
+| `ghostty/`      | `~/.config/ghostty/`                   | XDG path; stowed via standard `setup.sh` like all other packages                   |
+| `tmux/`         | `~/.tmux.conf`                         | Minimal config; always launched with `-2` flag for 256-color                       |
+| `nvim/`         | `~/.config/nvim/`                      | Git submodule pointing to `https://github.com/mtkhawaja/nvim-config.git`           |
+| `gnupg/`        | `~/.gnupg/gpg-agent.conf`              | GPG agent config                                                                   |
+| `bin/`          | `~/.local/bin/`                        | Custom shell scripts; `utility/` scripts are on `$PATH` via `.zshenv`              |
+| `ccstatusline/` | `~/.config/ccstatusline/settings.json` | Claude Code status line config (ccstatusline)                                      |
 
 ## Key Tool Versions / Managers
 
@@ -46,9 +46,10 @@ Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES
 
 ## AeroSpace Notes
 
-Workspaces use descriptive names (`Development`, `Web`, `Tools`, etc.) rather than numbers. `alt-<letter>` summons a
-workspace; `alt-shift-<letter>` moves the focused window there. Service mode (`alt-shift-;`) provides layout reset,
-balance, and float-toggle shortcuts.
+Both numbered workspaces (`alt-1`…`alt-9`) and descriptively named ones coexist (`Development`, `Web`, `Tools`,
+`Research`, `Media`, `Notes`, `Communication`, `Apple`, `Bitwarden`, `Email`, plus single-letter workspaces).
+`alt-<key>` summons a workspace; `alt-shift-<key>` moves the focused window there. Service mode (`alt-shift-;`)
+provides layout reset, balance, and float-toggle shortcuts.
 
 To find an app's bundle ID for `on-window-detected` rules:
 
