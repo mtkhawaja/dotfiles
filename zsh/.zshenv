@@ -17,23 +17,43 @@ export LESS="-R -N -C -M -I -j 10 -# 4"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Required for gpg.
-# Documentation: http://manpages.ubuntu.com/manpages/precise/en/man1/gpg-agent.1.html
-export GPG_TTY=$(tty)
-
-# Java
-export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which javac))))"
-export M2_HOME="$HOME/.local/bin/tools/apache-maven"
-
-# Other Tools
-export BITWARDEN_HOME="$HOME/.local/bin/tools/bitwarden"
+# Default editor for every shell — interactive and non-interactive (e.g. git
+# launched from a script or `ssh host 'git commit'`), so it belongs here, not .zshrc.
+export EDITOR="nvim"
 
 ############################
 # PATH Variable Setup
 ############################
 
 path+=("$HOME/.local/bin/scripts/utility")
-path+=("$HOME/.local/bin/tools/bitwarden/bin")
-path+=("$JAVA_HOME")
-path+=("$M2_HOME/bin")
+path+=("$HOME/.local/bin")
+
+
+# Linux/WSL: dev-environment installs the Bitwarden CLI here (macOS gets `bw` via brew).
+[[ -d "$HOME/.local/bin/tools/bitwarden/bin" ]] && path+=("$HOME/.local/bin/tools/bitwarden/bin")
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Homebrew (Apple Silicon, then Intel). Skipped on Linux/WSL, where dev-environment uses apt.
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# macOS: route SSH through the Bitwarden desktop app's SSH agent.
+[[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+
+export PATH="$HOME/.bun/bin:$PATH"
+
+# Go: GOPATH + the toolchain (brew on macOS, /usr/local/go on Linux) and $GOPATH/bin.
+export GOPATH="$HOME/go"
+export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"
+
 export PATH

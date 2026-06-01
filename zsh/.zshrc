@@ -66,6 +66,19 @@ ZSH_THEME="robbyrussell"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+
+############################
+# Ghostty
+# https://github.com/ghostty-org/ghostty/blob/main/src/shell-integration/README.md
+############################
+
+# https://ghostty.org/docs/features/shell-integration#manual-shell-integration-setup
+
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+  source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
+fi
+
+
 ############################
 # Plugins
 ############################
@@ -122,24 +135,13 @@ alias nvimdiff='nvim -d'
 alias vim="nvim"
 alias vi="nvim"
 alias oldvim="vim"
-# Java
-alias java8="/usr/lib/jvm/temurin-8-jdk-amd64/bin/java"
-alias java17="/usr/lib/jvm/temurin-17-jdk-amd64/bin/java"
-alias java21="/usr/lib/jvm/temurin-21-jdk-amd64/bin/java"
 ############################
-# Editor
+# GPG (interactive signing / pinentry)
 ############################
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nvim'
-fi
-
-############################
-# Auto Completion
-############################
-
-eval "$(bw completion --shell zsh); compdef _bw bw;"
+# Tell gpg-agent which terminal to prompt on. Lives here, not .zshenv, because
+# $(tty) assumes an attached terminal and .zshenv must stay tty-free.
+export GPG_TTY=$(tty)
 
 ############################
 # Key Bindings Completion
@@ -147,3 +149,11 @@ eval "$(bw completion --shell zsh); compdef _bw bw;"
 
 # Ctrl + Space for zsh auto-completion
 bindkey '^ ' autosuggest-accept
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# uv (Astral) completions
+if command -v uv >/dev/null; then
+  eval "$(uv generate-shell-completion zsh)"
+  eval "$(uvx --generate-shell-completion zsh)"
+fi

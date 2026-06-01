@@ -1,11 +1,16 @@
 [user]
     email = 36654508+mtkhawaja@users.noreply.github.com
     name = Muneeb Khawaja
+	signingkey = 535C84F6751CC5C4
 
 [core]
 	editor = nvim
     excludesfile = ~/.gitignore_global
-	autocrlf = false
+    # https://stackoverflow.com/questions/3206843/how-line-ending-conversions-work-with-git-core-autocrlf-between-different-operat
+	autocrlf = input
+
+[color]
+    ui = auto
 
 [color "branch"]
     current = green bold
@@ -14,12 +19,53 @@
 
 [commit]
     verbose = true
+	gpgsign = true
 
 [diff]
-	tool = nvimdiff
+    tool = nvimdiff
+    colorMoved = default
+
+[difftool]
+    prompt = false
 
 [merge]
-	tool = nvimdiff
+    tool = nvimdiff
+    conflictStyle = diff3
+
+[mergetool]
+    prompt = false
 
 [init]
     defaultBranch = main
+
+[pull]
+    ff = only
+
+[rebase]
+    autosquash = true
+    autostash = true
+
+[fetch]
+    prune = true
+    pruneTags = true
+
+[push]
+    default = simple
+    followTags = true
+
+[status]
+    short = true
+    branch = true
+
+[alias]
+    st = status -sb
+    co = checkout
+    br = branch
+    ci = commit
+    df = diff
+    lg = log --graph --decorate --oneline --all
+    last = log -1 HEAD
+    fp = fetch --prune
+    rv = remote -v
+[tag]
+	gpgSign = true
