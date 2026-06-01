@@ -17,9 +17,9 @@ export LESS="-R -N -C -M -I -j 10 -# 4"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Required for gpg.
-# Documentation: http://manpages.ubuntu.com/manpages/precise/en/man1/gpg-agent.1.html
-export GPG_TTY=$(tty)
+# Default editor for every shell — interactive and non-interactive (e.g. git
+# launched from a script or `ssh host 'git commit'`), so it belongs here, not .zshrc.
+export EDITOR="nvim"
 
 ############################
 # PATH Variable Setup

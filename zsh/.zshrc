@@ -136,19 +136,16 @@ alias vim="nvim"
 alias vi="nvim"
 alias oldvim="vim"
 ############################
-# Editor
+# GPG (interactive signing / pinentry)
 ############################
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nvim'
-fi
+# Tell gpg-agent which terminal to prompt on. Lives here, not .zshenv, because
+# $(tty) assumes an attached terminal and .zshenv must stay tty-free.
+export GPG_TTY=$(tty)
 
 ############################
 # Key Bindings Completion
 ############################
-# macOS: route SSH through the Bitwarden desktop app's SSH agent.
-[[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 
 # Ctrl + Space for zsh auto-completion
 bindkey '^ ' autosuggest-accept
