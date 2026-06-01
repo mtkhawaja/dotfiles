@@ -46,5 +46,10 @@ eval "$(pyenv init - zsh)"
 
 export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 export PATH="$HOME/.bun/bin:$PATH"
+
+# Go: GOPATH + the toolchain (brew on macOS, /usr/local/go on Linux) and $GOPATH/bin.
+export GOPATH="$HOME/go"
+export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"
+
 export GPG_TTY=$(tty)
 export PATH

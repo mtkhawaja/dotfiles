@@ -151,3 +151,5 @@ export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwa
 
 # Ctrl + Space for zsh auto-completion
 bindkey '^ ' autosuggest-accept
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
