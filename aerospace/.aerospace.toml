@@ -224,6 +224,7 @@ on-mode-changed = []
     alt-shift-s = 'move-node-to-workspace S'
     alt-shift-t = 'move-node-to-workspace Tools'
     alt-shift-u = 'move-node-to-workspace U'
+    alt-shift-v = 'move-node-to-workspace V'
     alt-shift-w = 'move-node-to-workspace Web'
     alt-shift-y = 'move-node-to-workspace Y'
 

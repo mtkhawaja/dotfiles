@@ -108,6 +108,7 @@ function main() {
       "$HOME/.zshenv"
       "$HOME/.gitconfig"
       "$HOME/.gitignore_global"
+      "$HOME/.claude/settings.json"
     )
   fi
 
@@ -121,6 +122,7 @@ function main() {
       "aerospace"
       "ccstatusline"
       "ghostty"
+      "claude"
     )
   fi
 

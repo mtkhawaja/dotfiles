@@ -14,7 +14,7 @@ whose contents get symlinked into `$HOME`.
 ./setup.sh
 ```
 
-`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `gnupg`, `aerospace`, `ccstatusline`, `ghostty`.
+`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `gnupg`, `aerospace`, `ccstatusline`, `ghostty`, `claude`.
 Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`).
 
 ## Package Layout
@@ -30,6 +30,22 @@ Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES
 | `gnupg/`        | `~/.gnupg/gpg-agent.conf`              | GPG agent config                                                                   |
 | `bin/`          | `~/.local/bin/`                        | Custom shell scripts; `utility/` scripts are on `$PATH` via `.zshenv`              |
 | `ccstatusline/` | `~/.config/ccstatusline/settings.json` | Claude Code status line config (ccstatusline)                                      |
+| `claude/`       | `~/.claude/` (selected files)          | Portable Claude Code config; see below — secrets deliberately excluded             |
+
+### Claude Code package (`claude/`)
+
+Tracks only the **portable** parts of `~/.claude/`: `settings.json` (model, hooks, statusLine,
+`enabledPlugins`, `extraKnownMarketplaces`, theme), a global `CLAUDE.md`, and `commands/`,
+`agents/`, `skills/` (whole-dir symlinks, so files added later are auto-tracked). Tracking
+`settings.json` is what makes enabled plugins carry to a fresh install — Claude Code re-clones
+them from `enabledPlugins`/`extraKnownMarketplaces` on next launch.
+
+**Secrets are deliberately excluded** (never placed in the package, so no `.gitignore` needed):
+`settings.local.json` (machine perms + secret `env`), `~/.claude.json` (MCP servers / OAuth /
+bearer tokens), `.credentials.json` / Keychain, the regenerable `plugins/` cache, and runtime
+state (`history.jsonl`, `projects/`, `sessions/`, `security/`, `telemetry/`, …). Rule of thumb:
+**secret `env` → `settings.local.json` (untracked); portable config → `settings.json` (tracked)** —
+Claude Code merges the two.
 
 ## Key Tool Versions / Managers
 

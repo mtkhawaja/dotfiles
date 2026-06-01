@@ -52,8 +52,14 @@ fi
 
 export PATH="$HOME/.bun/bin:$PATH"
 
-# Go: GOPATH + the toolchain (brew on macOS, /usr/local/go on Linux) and $GOPATH/bin.
+# Go: GOPATH + the toolchain. Only add directories that actually exist so PATH
+# never carries dead entries (consistent on macOS/brew and Linux/tarball installs).
 export GOPATH="$HOME/go"
-export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"
+# $GOPATH/bin is the install target for `go install`; may not exist until the
+# first install, so guard it too (new shell picks it up after that).
+[[ -d "$GOPATH/bin" ]] && path+=("$GOPATH/bin")
+# /usr/local/go/bin only exists where Go was installed from tarball (Linux); on
+# macOS `go` comes from brew and is already on PATH, so only add it if it's real.
+[[ -d /usr/local/go/bin ]] && path+=("/usr/local/go/bin")
 
 export PATH

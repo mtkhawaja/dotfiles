@@ -113,6 +113,18 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 ############################
+# History
+############################
+
+# Set after sourcing oh-my-zsh so these override its smaller defaults.
+HISTSIZE=100000
+SAVEHIST=100000
+setopt HIST_IGNORE_ALL_DUPS   # drop older duplicates of a command
+setopt HIST_REDUCE_BLANKS     # trim superfluous whitespace before saving
+setopt HIST_VERIFY            # expand !! etc. into the line for confirmation, don't run blind
+setopt SHARE_HISTORY          # share history live across open shells
+
+############################
 # Compilation flags
 ############################
 
@@ -140,6 +152,22 @@ alias nvimdiff='nvim -d'
 alias vim="nvim"
 alias vi="nvim"
 alias oldvim="vim"
+
+# Quality of life
+alias mkdir='mkdir -p'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ts='tmux_sessionizer.sh'   # fzf-driven tmux session switcher (on $PATH via .zshenv)
+alias reload='exec zsh'          # restart the shell to pick up config changes
+
+# Dotfiles management
+alias df='cd ~/.dotfiles'
+alias dfs='~/.dotfiles/setup.sh'
+
+# Modern CLI replacements (only aliased if the tool is installed, so configs stay portable)
+command -v eza >/dev/null && alias ls='eza --group-directories-first' && alias ll='eza -lah --git'
+command -v bat >/dev/null && alias cat='bat -pp'
+command -v fd  >/dev/null && export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 ############################
 # GPG (interactive signing / pinentry)
 ############################

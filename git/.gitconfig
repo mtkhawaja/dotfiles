@@ -24,6 +24,23 @@
 [diff]
     tool = nvimdiff
     colorMoved = default
+    # histogram produces cleaner, more readable diffs than the default Myers.
+    algorithm = histogram
+
+[rerere]
+    # Remember how conflicts were resolved and replay them automatically.
+    enabled = true
+
+[branch]
+    # List most-recently-committed branches first in `git branch`.
+    sort = -committerdate
+
+[column]
+    ui = auto
+
+[help]
+    # Prompt before running an autocorrected command instead of guessing.
+    autocorrect = prompt
 
 [difftool]
     prompt = false

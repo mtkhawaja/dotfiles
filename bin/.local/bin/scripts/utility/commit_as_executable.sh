@@ -2,7 +2,9 @@
 
 # See: https://stackoverflow.com/questions/21691202/how-to-create-file-execute-mode-permissions-in-git-on-windows
 
-TARGET_FILE=$1
+set -euo pipefail
+
+TARGET_FILE=${1:-}
 
 if ! [ -f "$TARGET_FILE" ]; then
   echo "File does not exist: '$TARGET_FILE'"
