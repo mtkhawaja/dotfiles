@@ -89,6 +89,12 @@ fi
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 # Browser Standard Plugins on GitHub: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
+#
+# NOTE: do NOT add the "ssh-agent" plugin. SSH keys are served by the Bitwarden
+# desktop SSH agent (SSH_AUTH_SOCK is set in .zshenv to its socket). The
+# ssh-agent plugin starts its own empty agent and overwrites SSH_AUTH_SOCK,
+# which makes ssh fall back to the on-disk .pub files and fail with
+# "Permission denied (publickey)". Leave SSH to Bitwarden.
 plugins=(
     "fzf"
     "z"
@@ -96,7 +102,6 @@ plugins=(
     "zsh-autosuggestions"
     "zsh-syntax-highlighting"
     "colored-man-pages"
-    "ssh-agent"
     "docker"
     "docker-compose"
     "mvn"
