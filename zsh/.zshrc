@@ -147,9 +147,16 @@ fi
 ############################
 # Key Bindings Completion
 ############################
-export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+# macOS: route SSH through the Bitwarden desktop app's SSH agent.
+[[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 
 # Ctrl + Space for zsh auto-completion
 bindkey '^ ' autosuggest-accept
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# uv (Astral) completions
+if command -v uv >/dev/null; then
+  eval "$(uv generate-shell-completion zsh)"
+  eval "$(uvx --generate-shell-completion zsh)"
+fi

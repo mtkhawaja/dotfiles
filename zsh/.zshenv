@@ -26,9 +26,11 @@ export GPG_TTY=$(tty)
 ############################
 
 path+=("$HOME/.local/bin/scripts/utility")
+path+=("$HOME/.local/bin")
 
-# Created by `pipx` on 2025-11-22 05:32:57
-export PATH="$PATH:/Users/mtkhawaja/.local/bin"
+
+# Linux/WSL: dev-environment installs the Bitwarden CLI here (macOS gets `bw` via brew).
+[[ -d "$HOME/.local/bin/tools/bitwarden/bin" ]] && path+=("$HOME/.local/bin/tools/bitwarden/bin")
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
@@ -38,18 +40,20 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew (Apple Silicon, then Intel). Skipped on Linux/WSL, where dev-environment uses apt.
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
+# macOS: route SSH through the Bitwarden desktop app's SSH agent.
+[[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 
-export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 export PATH="$HOME/.bun/bin:$PATH"
 
 # Go: GOPATH + the toolchain (brew on macOS, /usr/local/go on Linux) and $GOPATH/bin.
 export GOPATH="$HOME/go"
 export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"
 
-export GPG_TTY=$(tty)
 export PATH

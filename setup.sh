@@ -63,6 +63,37 @@ function stowDotfiles() {
   popd >/dev/null || logFailureAndExit "Failed to change directory to previous directory"
 }
 
+# Stow the OS-appropriate gnupg package so ~/.gnupg/gpg-agent.conf is symlinked
+# like every other dotfile. The two packages (gnupg-macos, gnupg-linux) share the
+# same internal path (.gnupg/gpg-agent.conf); only the pinentry-program differs.
+function configureGpgAgent() {
+  local dotfiles_home="$1"
+  local gnupg_dir="$HOME/.gnupg"
+  local pkg
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    pkg="gnupg-macos"
+  else
+    pkg="gnupg-linux"
+  fi
+
+  # Ensure ~/.gnupg is a real dir with safe perms BEFORE stowing, so stow links
+  # gpg-agent.conf *inside* it instead of folding ~/.gnupg into a repo symlink
+  # (which would drag your keyrings under version control / wrong perms).
+  mkdir -p "$gnupg_dir"
+  chmod 700 "$gnupg_dir"
+
+  stowDotfiles "$dotfiles_home" "$pkg"
+
+  # Warn (don't fail) if the configured pinentry isn't actually installed yet.
+  local pinentry
+  pinentry="$(awk '/^pinentry-program/ {print $2; exit}' "${dotfiles_home}/${pkg}/.gnupg/gpg-agent.conf")"
+  if [[ -n "$pinentry" && ! -x "$pinentry" ]]; then
+    logInfo "WARNING: pinentry-program '${pinentry}' is not executable; GPG prompts may fail until it is installed."
+  fi
+
+  command -v gpgconf >/dev/null 2>&1 && gpgconf --kill gpg-agent >/dev/null 2>&1 || true
+}
+
 function main() {
   DOTFILES_HOME=${DOTFILES_HOME:-"${HOME}/.dotfiles"}
 
@@ -87,7 +118,6 @@ function main() {
       "nvim"
       "tmux"
       "git"
-      "gnupg"
       "aerospace"
       "ccstatusline"
       "ghostty"
@@ -106,6 +136,7 @@ function main() {
 
   removeExistingConfigurationFiles "${CONFIG_FILES_TO_REMOVE[@]}"
   stowDotfiles "${DOTFILES_HOME}" "${STOW_FOLDERS[@]}"
+  configureGpgAgent "${DOTFILES_HOME}"
 
   logSuccess "Dotfiles setup completed successfully!"
   return 0
