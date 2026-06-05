@@ -21,4 +21,30 @@
 __pycache__/
 
 # Environment / secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.secret
+*.secrets
+.vault-token
+
+# Keys / certificates / keystores
 *.pem
+*.key
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# Claude Code (machine-local / secret — never commit)
+settings.local.json
+.claude.json
+.credentials.json
+CLAUDE.local.md
+
+# Logs
+*.log
+logs/
+log/
