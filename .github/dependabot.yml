@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # Keep GitHub Actions references current — tag pins rot silently otherwise.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

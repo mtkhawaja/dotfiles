@@ -1,0 +1,10 @@
+# This dir holds PRIVATE git config includes (work identity, etc.) loaded by
+# ~/.gitconfig via includeIf directives.
+#
+# Track the folder itself (via this file) so it always exists after stow, but
+# ignore every other file so private identities are never accidentally committed.
+# README.md and work.config.example are whitelisted: tracked docs/template.
+*
+!.gitignore
+!README.md
+!work.config.example

@@ -3,6 +3,12 @@
     name = Muneeb Khawaja
 	signingkey = 535C84F6751CC5C4
 
+# Work identity override: applied automatically to any repo whose remote uses the
+# github.com-work SSH alias (see ssh/.ssh/config.d). The real work identity lives in
+# the git-ignored ~/.gitconfig.d/work.config — see ~/.gitconfig.d/README.md.
+[includeIf "hasconfig:remote.*.url:git@github.com-work:*/**"]
+    path = ~/.gitconfig.d/work.config
+
 [core]
 	editor = nvim
     excludesfile = ~/.gitignore_global
@@ -19,7 +25,6 @@
 
 [commit]
     verbose = true
-	gpgsign = true
 
 [diff]
     tool = nvimdiff
@@ -69,6 +74,8 @@
 [push]
     default = simple
     followTags = true
+    # Auto-create the upstream on first push of a new branch (no --set-upstream). Git >= 2.37.
+    autoSetupRemote = true
 
 [status]
     short = true
@@ -84,5 +91,3 @@
     last = log -1 HEAD
     fp = fetch --prune
     rv = remote -v
-[tag]
-	gpgSign = true

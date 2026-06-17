@@ -10,4 +10,6 @@
 # IDE files
 .idea
 .vscode
-/.claude/settings.local.json
+
+# Claude Code machine-local config (perms + secret env) — never tracked, anywhere
+settings.local.json

@@ -47,5 +47,6 @@
   "extraKnownMarketplaces": {},
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark"
+  "theme": "dark",
+  "tui": "fullscreen"
 }

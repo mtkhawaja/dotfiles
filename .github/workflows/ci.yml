@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          version: v0.11.0
+          # zsh scripts can't be parsed by shellcheck (SC1071); check.sh skips
+          # them locally, the action skips them here.
+          ignore_names: fix-ssh.sh
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v23.2.0
+        with:
+          globs: '**/*.md'
+      # bash -n + JSON parse — same entry point you run locally.
+      - run: ./scripts/check.sh static

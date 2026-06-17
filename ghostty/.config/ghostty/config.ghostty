@@ -4,7 +4,6 @@ shell-integration-features = ssh-env
 
 
 # Theme
-config-file = ?auto/theme.ghostty
 theme = Catppuccin Mocha
 
 # typography

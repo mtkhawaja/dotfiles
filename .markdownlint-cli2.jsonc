@@ -1,0 +1,17 @@
+{
+  "config": {
+    // Prose wraps at ~100 here, and config tables/snippets run long by design.
+    "line-length": false,
+    // LICENSE.md (and similar) open with prose, not an H1.
+    "first-line-heading": false,
+    // Wide multi-column tables (package layouts) aren't worth hand-aligning every pipe.
+    "table-column-style": false
+  },
+  "ignores": [
+    // Vendored nvim config (git submodule) — not ours to lint.
+    "nvim/**",
+    // Historical planning record, not shipped content.
+    "docs/superpowers/**",
+    "node_modules/**"
+  ]
+}

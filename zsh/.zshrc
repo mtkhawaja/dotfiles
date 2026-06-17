@@ -157,7 +157,6 @@ alias oldvim="vim"
 alias mkdir='mkdir -p'
 alias ..='cd ..'
 alias ...='cd ../..'
-alias ts='tmux_sessionizer.sh'   # fzf-driven tmux session switcher (on $PATH via .zshenv)
 alias reload='exec zsh'          # restart the shell to pick up config changes
 
 # Dotfiles management

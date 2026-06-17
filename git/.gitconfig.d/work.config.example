@@ -1,0 +1,9 @@
+# Sample private git include — copy to ~/.gitconfig.d/work.config and edit.
+# ~/.gitconfig loads this automatically (via includeIf) for any repo whose remote
+# uses the github.com-work SSH alias. Override only what differs from personal.
+# See README.md in this directory for details.
+
+[user]
+    email = you@work-domain.com
+    # name = Your Name        # uncomment to override the personal name
+    # signingkey = <KEYID>    # uncomment if you sign work commits with a work key

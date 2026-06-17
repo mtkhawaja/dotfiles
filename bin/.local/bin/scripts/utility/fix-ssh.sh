@@ -117,8 +117,10 @@ function scan_and_fix_files() {
   log_info "Normalizing permissions for files in: '$target'"
 
   for file in "$target"/*; do
-    # Skip if it’s not a regular file
-    [[ -f "$file" ]] || continue
+    # Skip anything that isn't a real regular file. The -L guard skips symlinks
+    # (e.g. a stowed ~/.ssh/config); without it chmod would follow the link and
+    # silently re-perm the tracked file in the dotfiles repo.
+    [[ -f "$file" && ! -L "$file" ]] || continue
     base="${file:t}"
     if [[ -n "${RESERVED_FILES[$base]:-}" ]]; then
       process_reserved_file "$file" "$base"

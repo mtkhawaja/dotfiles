@@ -33,7 +33,9 @@ function logInfo() {
 function removeExistingConfigurationFiles() {
   local existing_files_to_remove=("$@")
   for file in "${existing_files_to_remove[@]}"; do
-    if [ -f "$file" ]; then
+    # -e misses dangling symlinks (it follows the link); -L catches them, so a
+    # broken link left by a prior run is removed too instead of colliding with stow.
+    if [ -e "$file" ] || [ -L "$file" ]; then
       logPending "Attempting to remove existing configuration file: '${file}'"
       rm "${file}" || logFailureAndExit "Failed to remove existing configuration file: '${file}'"
       logSuccess "Successfully removed existing configuration file: '${file}'"
@@ -94,6 +96,38 @@ function configureGpgAgent() {
   command -v gpgconf >/dev/null 2>&1 && gpgconf --kill gpg-agent >/dev/null 2>&1 || true
 }
 
+# Stow ~/.ssh/config (+ tracked public keys) while keeping ~/.ssh a real directory.
+# Work GitHub accounts and private servers go in ~/.ssh/config.d/*.conf, which the
+# tracked config Includes but which is deliberately NOT version-controlled here.
+function configureSshConfig() {
+  local dotfiles_home="$1"
+  local ssh_dir="$HOME/.ssh"
+
+  # Ensure ~/.ssh itself is a real dir with safe perms BEFORE stowing, so stow links
+  # files *inside* it (config, *.pub) instead of folding ~/.ssh into a repo symlink
+  # (which would drag known_hosts / control sockets under version control).
+  # config.d is intentionally NOT pre-created: stow folds ~/.ssh/config.d into a
+  # symlink to the repo's tracked-but-git-ignored ssh/.ssh/config.d, so private
+  # includes dropped there are guaranteed a home yet never committed.
+  mkdir -p "$ssh_dir"
+  chmod 700 "$ssh_dir"
+
+  # A real (non-symlink) ~/.ssh/config is pre-existing user content (OpenSSH default
+  # or hand-written) and would collide with `stow ssh`. Back it up with a timestamp
+  # before getting it out of the way, so the first run can never destroy it. A symlink
+  # here is one we created on a prior run, so stow -D handles it — no backup needed.
+  local ssh_config="${ssh_dir}/config"
+  if [ -f "$ssh_config" ] && [ ! -L "$ssh_config" ]; then
+    local backup
+    backup="${ssh_config}.bak.$(date +%Y%m%d-%H%M%S)"
+    logPending "Existing real '${ssh_config}' found; backing it up to '${backup}'"
+    mv "$ssh_config" "$backup" || logFailureAndExit "Failed to back up '${ssh_config}'"
+    logSuccess "Backed up existing SSH config to '${backup}'"
+  fi
+
+  stowDotfiles "$dotfiles_home" "ssh"
+}
+
 function main() {
   DOTFILES_HOME=${DOTFILES_HOME:-"${HOME}/.dotfiles"}
 
@@ -139,6 +173,7 @@ function main() {
   removeExistingConfigurationFiles "${CONFIG_FILES_TO_REMOVE[@]}"
   stowDotfiles "${DOTFILES_HOME}" "${STOW_FOLDERS[@]}"
   configureGpgAgent "${DOTFILES_HOME}"
+  configureSshConfig "${DOTFILES_HOME}"
 
   logSuccess "Dotfiles setup completed successfully!"
   return 0
