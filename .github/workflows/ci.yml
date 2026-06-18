@@ -18,20 +18,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      - name: shellcheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          version: v0.11.0
-          # shellcheck can't parse zsh (SC1071), and the action discovers scripts
-          # by file(1) type, so each zsh file is named here. They aren't skipped:
-          # check.sh validates them with `zsh -n` in the static step below.
-          ignore_names: fix-ssh.sh .zshenv
-      - name: markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v23.2.0
-        with:
-          globs: '**/*.md'
-      # zsh -n needs a zsh binary; ubuntu-latest usually ships one, install if not.
+      # ubuntu-latest ships shellcheck, jq, and node; ensure zsh for `zsh -n`.
       - name: ensure zsh
         run: command -v zsh >/dev/null || { sudo apt-get update && sudo apt-get install -y zsh; }
-      # bash -n + zsh -n + JSON parse — same entry point you run locally.
-      - run: ./scripts/check.sh static
+      # Single entry point, identical to local. check.sh selects shell scripts by
+      # shebang, so zsh files are validated with `zsh -n` and never fed to
+      # shellcheck (which can't parse them) — no auto-discovery, no ignore lists.
+      - run: ./scripts/check.sh lint

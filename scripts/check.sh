@@ -102,7 +102,8 @@ check_json() {
 
 check_markdown() {
   say "markdownlint (config from .markdownlint-cli2.jsonc)"
-  npx --yes markdownlint-cli2 "**/*.md"
+  # Pinned for reproducibility (CI and local agree); config is auto-discovered.
+  npx --yes markdownlint-cli2@0.22.1 "**/*.md"
 }
 
 # --- entrypoints ---
