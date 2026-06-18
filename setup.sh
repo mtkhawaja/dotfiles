@@ -93,7 +93,11 @@ function configureGpgAgent() {
     logInfo "WARNING: pinentry-program '${pinentry}' is not executable; GPG prompts may fail until it is installed."
   fi
 
-  command -v gpgconf >/dev/null 2>&1 && gpgconf --kill gpg-agent >/dev/null 2>&1 || true
+  # Reload the agent so it picks up the new config; tolerate failure (it may not
+  # be running yet) and a missing gpgconf entirely.
+  if command -v gpgconf >/dev/null 2>&1; then
+    gpgconf --kill gpg-agent >/dev/null 2>&1 || true
+  fi
 }
 
 # Stow ~/.ssh/config (+ tracked public keys) while keeping ~/.ssh a real directory.

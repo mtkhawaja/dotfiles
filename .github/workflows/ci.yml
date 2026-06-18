@@ -18,7 +18,17 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      # ubuntu-latest ships shellcheck, jq, and node; ensure zsh for `zsh -n`.
+      # Pin shellcheck so CI matches local; the runner pre-installs an older one
+      # whose extra findings (e.g. SC2015) would diverge from what you see locally.
+      - name: install pinned shellcheck
+        env:
+          SHELLCHECK_VERSION: v0.11.0
+        run: |
+          curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" | tar -xJ
+          sudo install "shellcheck-${SHELLCHECK_VERSION}/shellcheck" /usr/local/bin/shellcheck
+          rm -rf "shellcheck-${SHELLCHECK_VERSION}"
+          shellcheck --version
+      # ubuntu-latest ships jq and node; ensure zsh for `zsh -n`.
       - name: ensure zsh
         run: command -v zsh >/dev/null || { sudo apt-get update && sudo apt-get install -y zsh; }
       # Single entry point, identical to local. check.sh selects shell scripts by
