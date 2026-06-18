@@ -5,8 +5,8 @@
 # Usage:
 #   check.sh          Run everything (lint)
 #   check.sh lint     shellcheck + markdownlint + static (needs shellcheck, npx, jq)
-#   check.sh static   bash -n syntax + JSON parse (jq only; the lint steps
-#                     for shell/markdown run in CI as pinned actions)
+#   check.sh static   bash -n + zsh -n syntax + JSON parse (needs bash, zsh, jq;
+#                     the shellcheck/markdownlint steps run in CI as pinned actions)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -46,6 +46,26 @@ bash_scripts() {
   done < <(git ls-files '*.sh')
 }
 
+#######################################
+# Lists tracked zsh scripts to syntax-check with `zsh -n` (shellcheck can't parse
+# zsh, so this is how zsh files are validated). Matches the zsh dotfiles by name
+# (.zshrc has no shebang) plus any file carrying a zsh shebang.
+#######################################
+zsh_scripts() {
+  local f
+  while IFS= read -r f; do
+    case "${f##*/}" in
+      .zshrc | .zshenv | *.zsh)
+        echo "$f"
+        continue
+        ;;
+    esac
+    case "$(head -n1 "$f" 2>/dev/null)" in
+      *"env zsh" | *"/zsh") echo "$f" ;;
+    esac
+  done < <(git ls-files)
+}
+
 # --- checks ---
 
 check_shellcheck() {
@@ -66,6 +86,15 @@ check_bash_syntax() {
   fi
 }
 
+check_zsh_syntax() {
+  say "zsh -n syntax check"
+  local files
+  files="$(zsh_scripts)"
+  if [[ -n "${files}" ]]; then
+    echo "${files}" | xargs -n1 zsh -n
+  fi
+}
+
 check_json() {
   say "tracked JSON parses"
   git ls-files '*.json' | xargs -n1 jq -e . >/dev/null
@@ -80,7 +109,9 @@ check_markdown() {
 
 run_static() {
   require jq
+  require zsh
   check_bash_syntax
+  check_zsh_syntax
   check_json
 }
 

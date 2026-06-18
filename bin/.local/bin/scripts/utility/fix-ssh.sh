@@ -21,17 +21,10 @@ DIR_MODE=700
 PUBLIC_KEY_MODE=644
 PRIVATE_KEY_MODE=600
 
-# Reserved files and their specific permissions.
-# Key   = filename (basename only)
-# Value = chmod numeric mode
-typeset -A RESERVED_FILES
-RESERVED_FILES=(
-  [config]=600
-  [authorized_keys]=600
-  [authorized_keys2]=600
-  [known_hosts]=644
-  [known_hosts.old]=644
-)
+# Reserved SSH files get a fixed mode (see reserved_file_mode). Implemented as a
+# case rather than an associative array so `zsh -n` can syntax-check this file:
+# under -n the `typeset -A` isn't executed, so an [key]=value literal would trip
+# "bad subscript for direct array assignment".
 
 #######################################
 # Logging helpers (with colors)
@@ -91,10 +84,19 @@ function set_directory_permissions() {
   chmod "$DIR_MODE" "$target"
 }
 
+# Echoes the required mode for a reserved SSH filename; returns non-zero if the
+# name is not reserved (so callers fall through to the public/private heuristics).
+function reserved_file_mode() {
+  case "$1" in
+    config | authorized_keys | authorized_keys2) print -r -- 600 ;;
+    known_hosts | known_hosts.old) print -r -- 644 ;;
+    *) return 1 ;;
+  esac
+}
+
 function process_reserved_file() {
   local file="$1"
-  local base="$2"
-  local mode="${RESERVED_FILES[$base]}"
+  local mode="$2"
   log_info "[RESERVED_FILE] '$file' -> chmod $mode"
   chmod "$mode" "$file"
 }
@@ -113,7 +115,7 @@ function process_private_key() {
 
 function scan_and_fix_files() {
   local target="$1"
-  local file base
+  local file base mode
   log_info "Normalizing permissions for files in: '$target'"
 
   for file in "$target"/*; do
@@ -122,8 +124,8 @@ function scan_and_fix_files() {
     # silently re-perm the tracked file in the dotfiles repo.
     [[ -f "$file" && ! -L "$file" ]] || continue
     base="${file:t}"
-    if [[ -n "${RESERVED_FILES[$base]:-}" ]]; then
-      process_reserved_file "$file" "$base"
+    if mode="$(reserved_file_mode "$base")"; then
+      process_reserved_file "$file" "$mode"
     elif [[ "$base" == *.pub ]]; then
       process_public_key "$file"
     else
