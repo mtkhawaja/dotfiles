@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "model": "opus",
   "hooks": {
     "PreToolUse": [
@@ -33,7 +34,7 @@
     "frontend-design@claude-plugins-official": false,
     "playwright@claude-plugins-official": false,
     "hookify@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": true,
     "jdtls-lsp@claude-plugins-official": false,
     "pyright-lsp@claude-plugins-official": false,
     "remember@claude-plugins-official": false,
@@ -47,6 +48,5 @@
   "extraKnownMarketplaces": {},
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark",
-  "tui": "fullscreen"
+  "theme": "dark"
 }

@@ -68,7 +68,7 @@ persistent-workspaces = [
     "Media",
     "Notes",
     "O",
-    "P",
+    "PyCharm",
     "Q",
     "Research",
     "S",
@@ -187,7 +187,7 @@ on-mode-changed = []
     alt-m = 'summon-workspace Media'
     alt-n = 'summon-workspace Notes'
     alt-o = 'summon-workspace O'
-    alt-p = 'summon-workspace P'
+    alt-p = 'summon-workspace PyCharm'
     alt-q = 'summon-workspace Q'
     alt-r = 'summon-workspace Research'
     alt-s = 'summon-workspace S'
@@ -218,7 +218,7 @@ on-mode-changed = []
     alt-shift-m = 'move-node-to-workspace Media'
     alt-shift-n = 'move-node-to-workspace Notes'
     alt-shift-o = 'move-node-to-workspace O'
-    alt-shift-p = 'move-node-to-workspace P'
+    alt-shift-p = 'move-node-to-workspace PyCharm'
     alt-shift-q = 'move-node-to-workspace Q'
     alt-shift-r = 'move-node-to-workspace Research'
     alt-shift-s = 'move-node-to-workspace S'
@@ -270,16 +270,18 @@ on-mode-changed = []
     if.app-id = 'com.apple.mail'
     run = 'move-node-to-workspace Email'
 
-# D = Development
+# D = Development (IntelliJ)
 [[on-window-detected]]
     if.app-id = 'com.jetbrains.intellij'
     run = 'move-node-to-workspace Development'
 [[on-window-detected]]
-    if.app-id = 'com.jetbrains.pycharm'
-    run = 'move-node-to-workspace Development'
-[[on-window-detected]]
     if.app-id = 'com.jetbrains.datagrip'
     run = 'move-node-to-workspace Development'
+
+# PyCharm
+[[on-window-detected]]
+    if.app-id = 'com.jetbrains.pycharm'
+    run = 'move-node-to-workspace PyCharm'
 [[on-window-detected]]
     if.app-id = 'com.microsoft.VSCode'
     run = 'move-node-to-workspace Development'
@@ -300,6 +302,9 @@ on-mode-changed = []
     run = 'move-node-to-workspace Research'
 [[on-window-detected]]
     if.app-id = 'com.openai.chat'
+    run = 'move-node-to-workspace Research'
+[[on-window-detected]]
+    if.app-id = 'com.anthropic.claudefordesktop'
     run = 'move-node-to-workspace Research'
 
 # T = Terminal / Tooling / Testing
