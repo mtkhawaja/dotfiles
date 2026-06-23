@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Pin shellcheck so CI matches local; the runner pre-installs an older one
       # whose extra findings (e.g. SC2015) would diverge from what you see locally.
       - name: install pinned shellcheck
