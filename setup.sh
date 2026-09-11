@@ -59,7 +59,12 @@ function stowDotfiles() {
     logPending "Attempting un-stow: '${folder}'"
     stow -D "${folder}" || logFailureAndExit "Failed to un-stow: '${folder}'"
     logPending "Attempting stow: '${folder}'"
-    stow "${folder}" || logFailureAndExit "Failed to stow: '${folder}'"
+    local stow_options=()
+    # Keep Codex runtime state outside the repo, including on a fresh install.
+    if [[ "$folder" == "codex" ]]; then
+      stow_options+=(--no-folding)
+    fi
+    stow "${stow_options[@]}" "${folder}" || logFailureAndExit "Failed to stow: '${folder}'"
     logSuccess "Successfully stowed: '${folder}'"
   done
   popd >/dev/null || logFailureAndExit "Failed to change directory to previous directory"
@@ -161,6 +166,7 @@ function main() {
       "ccstatusline"
       "ghostty"
       "claude"
+      "codex"
     )
   fi
 

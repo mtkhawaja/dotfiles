@@ -1,0 +1,26 @@
+# Select with: codex -p dotfiles
+# Layers over ~/.codex/config.toml, keeping local integrations and credentials there.
+model = "gpt-6-astra"
+model_reasoning_effort = "low"
+
+[tui]
+theme = "catppuccin-mocha"
+status_line_use_colors = true
+animations = true
+whimsy = true
+
+# Keep model and remaining capacity visible when trailing fields are omitted.
+# Use the project name up front; leave the longer working directory last.
+status_line = [
+  "run-state",
+  "model-with-reasoning",
+  "context-used",
+  "five-hour-limit",
+  "weekly-limit",
+  "project-name",
+  "git-branch",
+  "estimated-thread-cost",
+  "total-input-tokens",
+  "total-output-tokens",
+  "current-dir",
+]

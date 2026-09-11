@@ -14,7 +14,7 @@ whose contents get symlinked into `$HOME`.
 ./setup.sh
 ```
 
-`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `aerospace`, `ccstatusline`, `ghostty`, `claude`.
+`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `aerospace`, `ccstatusline`, `ghostty`, `claude`, `codex`.
 Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`). The
 gnupg (`gnupg-macos` / `gnupg-linux`, selected by OS) and `ssh` packages are stowed by dedicated
 functions (`configureGpgAgent`, `configureSshConfig`) rather than `STOW_FOLDERS`, so `~/.gnupg` /
@@ -34,6 +34,7 @@ functions (`configureGpgAgent`, `configureSshConfig`) rather than `STOW_FOLDERS`
 | `bin/`          | `~/.local/bin/`                        | Custom shell scripts; `utility/` scripts are on `$PATH` via `.zshenv`              |
 | `ccstatusline/` | `~/.config/ccstatusline/settings.json` | Claude Code status line config (ccstatusline)                                      |
 | `claude/`       | `~/.claude/` (selected files)          | Portable Claude Code config; see below — secrets deliberately excluded             |
+| `codex/`        | `~/.codex/dotfiles.config.toml`        | Portable profile and native statusline; select with `codex -p dotfiles`             |
 | `ssh/`          | `~/.ssh/config`, `~/.ssh/*.pub`        | Public personal SSH config; private work/server entries excluded — see below       |
 
 ### Git package (`git/`)
@@ -101,6 +102,17 @@ bearer tokens), `.credentials.json` / Keychain, the regenerable `plugins/` cache
 state (`history.jsonl`, `projects/`, `sessions/`, `security/`, `telemetry/`, …). Rule of thumb:
 **secret `env` → `settings.local.json` (untracked); portable config → `settings.json` (tracked)** —
 Claude Code merges the two.
+
+### Codex package (`codex/`)
+
+Tracks a config profile selected with `codex -p dotfiles` (Codex CLI 0.154.0).
+It layers model preferences and the native statusline over the untracked `~/.codex/config.toml`,
+preserving local integrations. Stow uses `--no-folding` so `~/.codex` stays a real directory;
+credentials, sessions, plugins, and other runtime state stay outside the repo.
+
+The footer approximates ccstatusline with Git branch, directory, model/reasoning, context usage,
+five-hour/weekly limits, estimated cost, and input/output tokens. It does not reproduce Claude's
+three-row styling, skills count, cache tokens, or timers. Narrow terminals may omit trailing fields.
 
 ## Key Tool Versions / Managers
 
