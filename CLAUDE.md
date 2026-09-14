@@ -14,7 +14,8 @@ whose contents get symlinked into `$HOME`.
 ./setup.sh
 ```
 
-`setup.sh` defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `aerospace`, `ccstatusline`, `ghostty`, `claude`, `codex`.
+`setup.sh` first creates a git-ignored `.secrets` (mode 0600) from `.secrets.example` if it doesn't exist;
+`zsh/.zshenv` sources it, so exported tokens reach every shell. It then defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `aerospace`, `ccstatusline`, `ghostty`, `claude`, `codex`.
 Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`). The
 gnupg (`gnupg-macos` / `gnupg-linux`, selected by OS) and `ssh` packages are stowed by dedicated
 functions (`configureGpgAgent`, `configureSshConfig`) rather than `STOW_FOLDERS`, so `~/.gnupg` /

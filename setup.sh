@@ -144,6 +144,14 @@ function main() {
     logFailureAndExit "Dotfiles directory does not exist: '${DOTFILES_HOME}'"
   fi
 
+  # Bootstrap local secrets once; preserve existing files and symlinks.
+  if [[ ! -f "$DOTFILES_HOME/.secrets.example" ]]; then
+    logInfo "No .secrets.example in '${DOTFILES_HOME}'; skipping secrets bootstrap"
+  elif [[ ! -e "$DOTFILES_HOME/.secrets" && ! -L "$DOTFILES_HOME/.secrets" ]]; then
+    (umask 077; set -o noclobber; cat "$DOTFILES_HOME/.secrets.example" > "$DOTFILES_HOME/.secrets") ||
+      logFailureAndExit "Failed to create local secrets file"
+  fi
+
   if [[ -z ${CONFIG_FILES_TO_REMOVE+x} ]]; then
     CONFIG_FILES_TO_REMOVE=(
       "$HOME/.zshrc"

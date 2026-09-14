@@ -1,4 +1,5 @@
 # private files
+/.secrets
 *.pem
 
 # temporary files

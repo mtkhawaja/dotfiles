@@ -69,3 +69,10 @@ export GOPATH="$HOME/go"
 [[ -d /usr/local/go/bin ]] && path+=("/usr/local/go/bin")
 
 export PATH
+
+# Machine-local secrets, created by setup.sh from .secrets.example in the repo
+# root. Resolve the root through this file's stow symlink (~/.zshenv ->
+# <repo>/zsh/.zshenv) so a DOTFILES_HOME override still finds it.
+_dotfiles_root="${${(%):-%x}:A:h:h}"
+[[ -r "$_dotfiles_root/.secrets" ]] && source "$_dotfiles_root/.secrets"
+unset _dotfiles_root
