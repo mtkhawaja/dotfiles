@@ -14,8 +14,6 @@ export TZ="America/New_York"
 export LANG="en_US.UTF-8"
 # Used by `less` to display line numbers without having to type `-N` every time.
 export LESS="-R -N -C -M -I -j 10 -# 4"
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
 
 # Default editor for every shell — interactive and non-interactive (e.g. git
 # launched from a script or `ssh host 'git commit'`), so it belongs here, not .zshrc.
@@ -32,20 +30,28 @@ path+=("$HOME/.local/bin")
 # Linux/WSL: dev-environment installs the Bitwarden CLI here (macOS gets `bw` via brew).
 [[ -d "$HOME/.local/bin/tools/bitwarden/bin" ]] && path+=("$HOME/.local/bin/tools/bitwarden/bin")
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 # Homebrew (Apple Silicon, then Intel). Skipped on Linux/WSL, where dev-environment uses apt.
 if [[ -x /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
+
+############################
+# Version Managers (PATH only)
+############################
+
+export SDKMAN_DIR="$HOME/.sdkman"
+export NVM_DIR="$HOME/.nvm"
+
+# Put the active toolchains on PATH for every shell — scripts, `zsh -c`,
+# `ssh host 'mvn test'`, launchd/cron. The managers' init scripts are slow and
+# only add functions/completions, so they stay in .zshrc. Prepended after brew
+# so sdkman/nvm win over brew java/node, as in interactive shells. nvm: highest
+# installed version (the default alias is not resolved). -U keeps nested shells
+# (tmux, subshells) from accumulating duplicate entries.
+typeset -U path
+path=("$SDKMAN_DIR"/candidates/*/current/bin(N) "$NVM_DIR"/versions/node/*/bin(Nn[-1]) $path)
 
 # macOS: route SSH through the Bitwarden desktop app's SSH agent.
 [[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"

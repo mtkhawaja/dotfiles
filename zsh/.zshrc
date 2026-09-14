@@ -1,6 +1,9 @@
 # `.zshrc' is sourced in interactive shells.
 # It should contain commands to set up aliases, functions, options, key bindings, etc.
 
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -105,6 +108,7 @@ plugins=(
     "docker"
     "docker-compose"
     "mvn"
+    "nvm"
     "node"
     "npm"
     "tmux"
@@ -189,3 +193,13 @@ if command -v uv >/dev/null; then
   eval "$(uv generate-shell-completion zsh)"
   eval "$(uvx --generate-shell-completion zsh)"
 fi
+
+############################
+# Version Managers
+############################
+
+# PATH entries live in .zshenv (so scripts/ssh see them); this only loads the
+# `sdk` function and completions. nvm is loaded by the oh-my-zsh `nvm` plugin,
+# ordered before `npm` so that plugin finds npm on PATH.
+# Keep SDKMAN initialization at the end of the file.
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
