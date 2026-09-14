@@ -21,6 +21,17 @@ gnupg (`gnupg-macos` / `gnupg-linux`, selected by OS) and `ssh` packages are sto
 functions (`configureGpgAgent`, `configureSshConfig`) rather than `STOW_FOLDERS`, so `~/.gnupg` /
 `~/.ssh` stay real dirs instead of being folded into symlinks.
 
+## Checks
+
+```bash
+./scripts/check.sh lint    # shellcheck (bash) + zsh -n + markdownlint + JSON parse; same as CI
+./scripts/check.sh static  # syntax/JSON only; no shellcheck or npx needed
+```
+
+shellcheck can't parse zsh, so `.zshenv`, `.zshrc`, and zsh-shebang files are validated with `zsh -n`
+only. markdownlint config is `.markdownlint-cli2.jsonc` (line length off; `nvim/` and `docs/superpowers/`
+ignored). CI (`.github/workflows/ci.yml`) runs the same script with a pinned shellcheck.
+
 ## Package Layout
 
 | Directory       | Symlink target                         | Notes                                                                              |
