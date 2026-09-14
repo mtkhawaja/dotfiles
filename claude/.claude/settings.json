@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "opus",
+  "model": "claude-fable-5-1[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -31,7 +31,7 @@
     "refreshInterval": 10
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": true,
     "playwright@claude-plugins-official": false,
     "hookify@claude-plugins-official": false,
     "claude-md-management@claude-plugins-official": true,
@@ -59,6 +59,11 @@
         "source": "github",
         "repo": "blader/humanizer"
       }
+    }
+  },
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "medium"
     }
   },
   "autoDreamEnabled": false,
