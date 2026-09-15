@@ -36,7 +36,12 @@ The personal account is the bare `Host github.com` block in `~/.ssh/config`.
 
    ```bash
    ssh-add -L | grep '<key label in Bitwarden>' > ~/.ssh/<user>_github.pub
+   [ -s ~/.ssh/<user>_github.pub ] || echo 'NO MATCH — label wrong, file is empty'
    ```
+
+   The guard matters: if the label does not match, `grep` writes an **empty**
+   file and the redirect still succeeds. Nothing complains until much later, when
+   auth fails with `Permission denied (publickey)`.
 
 2. Fact-check the key is actually registered on that GitHub account (the blob must
    appear, or auth fails with `Permission denied (publickey)`):

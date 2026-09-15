@@ -62,15 +62,50 @@ Inside a personal repo (remote uses `github.com`):
 git config user.email      # -> 36654508+mtkhawaja@users.noreply.github.com
 ```
 
-## Alternative condition: by directory
+To see *which* file supplied the value (useful when a repo picks the identity you
+did not expect):
 
-Prefer to switch identity by where a repo lives rather than by remote? Use a
-`gitdir` condition instead (or in addition):
+```bash
+git config --show-origin --get user.email
+```
+
+## Where matching on the remote falls short
+
+`hasconfig:remote.*.url` can only fire once a matching remote exists. Two cases
+slip through, and both fail **silently** by falling back to the personal identity:
+
+| Case | Why it misses |
+|---|---|
+| Work repo cloned over **HTTPS** | The URL is `https://github.com/owner/repo.git`, which never matches the `git@github.com-work:` pattern. `gh repo clone`, IDE clone dialogs and CI checkouts all default to HTTPS. |
+| `git init` **before** `git remote add` | There is no remote yet, so the condition cannot match. Commits made in that window carry the personal identity and keep it after the remote is added. |
+
+So `~/.gitconfig` pairs the remote condition with a **location** condition:
 
 ```ini
-[includeIf "gitdir:~/work/"]
+[includeIf "gitdir:~/source-code/work/"]
     path = ~/.gitconfig.d/work.config
 ```
 
-This loads `work.config` for any repo under `~/work/`. The trailing slash matters
-(matches the directory and everything beneath it).
+Anything under `~/source-code/work/` gets the work identity regardless of remote
+(or absence of one). The trailing slash matters: it matches the directory and
+everything beneath it. The two conditions are complementary, not redundant — the
+remote condition covers work repos cloned outside that tree, the directory
+condition covers repos whose remote cannot be matched.
+
+To convert an HTTPS remote to its SSH form, `git-remotes-to-ssh.sh` (in
+`bin/.local/bin/scripts/utility/`) rewrites it — but it maps the host literally,
+so `https://github.com/...` becomes the **personal** `git@github.com:...`. For a
+work repo, set the alias by hand:
+
+```bash
+git remote set-url origin git@github.com-work:<owner>/<repo>.git
+```
+
+## Signing keys are not part of the split
+
+`user.signingkey` lives in the personal `[user]` block and therefore applies in
+work repos too. Nothing is signed automatically (`commit.gpgsign` is unset), so
+this is latent rather than active — but if a work org ever requires signed
+commits, they would be signed with the personal key. `work.config.example` has a
+commented `signingkey` line for that reason; uncomment it and set a work key
+before enabling signing on work repos.

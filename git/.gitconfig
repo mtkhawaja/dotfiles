@@ -9,6 +9,12 @@
 [includeIf "hasconfig:remote.*.url:git@github.com-work:*/**"]
     path = ~/.gitconfig.d/work.config
 
+# Belt and braces. The condition above keys off the remote URL, so it cannot fire
+# for a work repo cloned over HTTPS, or for a `git init` that has no remote yet —
+# both silently fall back to the personal identity above. Location catches those.
+[includeIf "gitdir:~/source-code/work/"]
+    path = ~/.gitconfig.d/work.config
+
 [core]
 	editor = nvim
     excludesfile = ~/.gitignore_global
