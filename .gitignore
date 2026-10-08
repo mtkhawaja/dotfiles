@@ -14,3 +14,6 @@
 
 # Claude Code machine-local config (perms + secret env) — never tracked, anywhere
 settings.local.json
+
+# Synced skill copies; keep authored skills trackable
+/claude/.claude/skills/synced/

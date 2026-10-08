@@ -10,6 +10,8 @@
   "ignores": [
     // Vendored nvim config (git submodule) — not ours to lint.
     "nvim/**",
+    // Synced skill copies — not maintained in this repo.
+    "claude/.claude/skills/synced/**",
     // Historical planning record, not shipped content.
     "docs/superpowers/**",
     "node_modules/**"
