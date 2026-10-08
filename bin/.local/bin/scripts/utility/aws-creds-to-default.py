@@ -35,6 +35,7 @@ import os
 import platform
 import subprocess
 import sys
+import tempfile
 from typing import Final, NoReturn
 
 SCRIPT_NAME = os.path.basename(sys.argv[0])
@@ -111,13 +112,22 @@ def parse_credentials(text: str) -> dict[str, str]:
 
 
 def _write_secure(config: configparser.ConfigParser, path: str) -> None:
-    """Write config to path as 0600, creating ~/.aws (0700) if missing."""
-    os.makedirs(os.path.dirname(path), mode=0o700, exist_ok=True)
-    # Open 0600 from the start so secrets are never briefly world-readable.
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w") as handle:
-        config.write(handle, space_around_delimiters=False)
-    os.chmod(path, 0o600)
+    """Atomically replace config as 0600, preserving an existing symlink."""
+    path = os.path.realpath(path)
+    directory = os.path.dirname(path)
+    os.makedirs(directory, mode=0o700, exist_ok=True)
+    # Same directory keeps the rename atomic; mkstemp creates the file as 0600.
+    fd, temporary_path = tempfile.mkstemp(prefix=".credentials.", dir=directory)
+    try:
+        with os.fdopen(fd, "w") as handle:
+            config.write(handle, space_around_delimiters=False)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_path, path)
+        temporary_path = None
+    finally:
+        if temporary_path is not None:
+            os.unlink(temporary_path)
 
 
 def _preserved_note(preserved: list[str]) -> str:
