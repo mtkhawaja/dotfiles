@@ -3,8 +3,7 @@
 ## Communication
 
 Be direct; lead with the answer. Push back on weak ideas instead of agreeing reflexively. Keep all
-output concise — prose, commits, docs; don't add verbose or token-heavy content (e.g. attribution
-lines) without asking.
+output concise — prose, commits, docs.
 
 ## CLI tools
 
