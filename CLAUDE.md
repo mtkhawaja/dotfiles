@@ -14,9 +14,12 @@ whose contents get symlinked into `$HOME`.
 ./setup.sh
 ```
 
-`setup.sh` first creates a git-ignored `.secrets` (mode 0600) from `.secrets.example` if it doesn't exist;
-`zsh/.zshenv` sources it, so exported tokens reach every shell. It then defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `aerospace`, `ccstatusline`, `ghostty`, `claude`, `codex`.
-Supports overriding via env vars (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`). The
+`setup.sh` validates all packages, backs up unmanaged configs under `~/.dotfiles-setup/backup.*`
+(mode 0700), and dry-runs Stow. A failed preflight restores the configs; successful preflight
+retains backups for manual recovery. It then creates a git-ignored `.secrets` (mode 0600) from
+`.secrets.example` if absent; `zsh/.zshenv` sources it so exported tokens reach every shell.
+It defaults to stowing: `zsh`, `bin`, `nvim`, `tmux`, `git`, `aerospace`, `ccstatusline`, `ghostty`, `claude`, `codex`.
+Supports overrides (`DOTFILES_HOME`, `STOW_FOLDERS`, `CONFIG_FILES_TO_REMOVE`); Stow always targets `$HOME`. The
 gnupg (`gnupg-macos` / `gnupg-linux`, selected by OS) and `ssh` packages are stowed by dedicated
 functions (`configureGpgAgent`, `configureSshConfig`) rather than `STOW_FOLDERS`, so `~/.gnupg` /
 `~/.ssh` stay real dirs instead of being folded into symlinks.
@@ -104,7 +107,8 @@ deliberately allowed to fold.
 
 Tracks only the **portable** parts of `~/.claude/`: `settings.json` (model, hooks, statusLine,
 `enabledPlugins`, `extraKnownMarketplaces`, theme), a global `CLAUDE.md`, and `commands/`,
-`agents/`, `skills/` (whole-dir symlinks, so files added later are auto-tracked). Tracking
+`agents/`, `skills/`. Stow uses `--no-folding` to keep runtime directories outside the repo;
+rerun setup after adding files to these packages. Tracking
 `settings.json` is what makes enabled plugins carry to a fresh install — Claude Code re-clones
 them from `enabledPlugins`/`extraKnownMarketplaces` on next launch.
 

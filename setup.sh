@@ -30,18 +30,43 @@ function logInfo() {
   log "INFO" "$1"
 }
 
-function removeExistingConfigurationFiles() {
-  local existing_files_to_remove=("$@")
-  for file in "${existing_files_to_remove[@]}"; do
-    # -e misses dangling symlinks (it follows the link); -L catches them, so a
-    # broken link left by a prior run is removed too instead of colliding with stow.
+function backupExistingConfigurationFiles() {
+  local dotfiles_home="$1"
+  shift
+  local file folder managed backup
+  for file in "$@"; do
     if [ -e "$file" ] || [ -L "$file" ]; then
-      logPending "Attempting to remove existing configuration file: '${file}'"
-      rm "${file}" || logFailureAndExit "Failed to remove existing configuration file: '${file}'"
-      logSuccess "Successfully removed existing configuration file: '${file}'"
-    else
-      logSuccess "'${file}' does not exist. Nothing to remove."
+      # Leave managed files to Stow, including files inside a folded directory.
+      # Moving those would remove the source file from the repository itself.
+      managed=0
+      for folder in "${STOW_PACKAGES[@]}"; do
+        if [[ "$file" -ef "$dotfiles_home/$folder/${file#"$HOME"/}" ]]; then
+          managed=1
+          break
+        fi
+      done
+      [[ "$managed" == 1 ]] && continue
+      if [[ -d "$file" && ! -L "$file" ]]; then
+        logFailureAndExit "Expected a configuration file, found directory: '${file}'"
+      fi
+      if [[ -z "$BACKUP_DIR" ]]; then
+        BACKUP_DIR="$(mktemp -d "${LOG_DIR}/backup.XXXXXXXX")"
+        logInfo "Saving existing configurations to: '${BACKUP_DIR}'"
+      fi
+      backup="${BACKUP_DIR}/${#BACKUP_ORIGINALS[@]}-${file##*/}"
+      mv -- "$file" "$backup" || logFailureAndExit "Failed to back up '${file}'"
+      BACKUP_ORIGINALS+=("$file")
+      BACKUP_PATHS+=("$backup")
+      logSuccess "Backed up '${file}' to '${backup}'"
     fi
+  done
+}
+
+function restoreConfigurationBackups() {
+  local i
+  for ((i=${#BACKUP_ORIGINALS[@]}-1; i>=0; i--)); do
+    mv -- "${BACKUP_PATHS[i]}" "${BACKUP_ORIGINALS[i]}" ||
+      log "ERROR" "Could not restore '${BACKUP_ORIGINALS[i]}'; backup remains at '${BACKUP_PATHS[i]}'"
   done
 }
 
@@ -56,15 +81,13 @@ function stowDotfiles() {
     if [ ! -d "$folder" ]; then
       logFailureAndExit "Stow folder does not exist: '${folder}'"
     fi
-    logPending "Attempting un-stow: '${folder}'"
-    stow -D "${folder}" || logFailureAndExit "Failed to un-stow: '${folder}'"
-    logPending "Attempting stow: '${folder}'"
+    logPending "Attempting restow: '${folder}'"
     local stow_options=()
-    # Keep Codex runtime state outside the repo, including on a fresh install.
-    if [[ "$folder" == "codex" ]]; then
+    # Keep application runtime state outside the repo on a fresh install.
+    if [[ "$folder" == "codex" || "$folder" == "claude" ]]; then
       stow_options+=(--no-folding)
     fi
-    stow "${stow_options[@]}" "${folder}" || logFailureAndExit "Failed to stow: '${folder}'"
+    stow --target="$HOME" --restow "${stow_options[@]}" "${folder}" || logFailureAndExit "Failed to stow: '${folder}'"
     logSuccess "Successfully stowed: '${folder}'"
   done
   popd >/dev/null || logFailureAndExit "Failed to change directory to previous directory"
@@ -121,19 +144,7 @@ function configureSshConfig() {
   mkdir -p "$ssh_dir"
   chmod 700 "$ssh_dir"
 
-  # A real (non-symlink) ~/.ssh/config is pre-existing user content (OpenSSH default
-  # or hand-written) and would collide with `stow ssh`. Back it up with a timestamp
-  # before getting it out of the way, so the first run can never destroy it. A symlink
-  # here is one we created on a prior run, so stow -D handles it — no backup needed.
-  local ssh_config="${ssh_dir}/config"
-  if [ -f "$ssh_config" ] && [ ! -L "$ssh_config" ]; then
-    local backup
-    backup="${ssh_config}.bak.$(date +%Y%m%d-%H%M%S)"
-    logPending "Existing real '${ssh_config}' found; backing it up to '${backup}'"
-    mv "$ssh_config" "$backup" || logFailureAndExit "Failed to back up '${ssh_config}'"
-    logSuccess "Backed up existing SSH config to '${backup}'"
-  fi
-
+  # Pre-existing SSH config is backed up with the other configs before preflight.
   stowDotfiles "$dotfiles_home" "ssh"
 }
 
@@ -142,14 +153,6 @@ function main() {
 
   if [[ ! -d "$DOTFILES_HOME" ]]; then
     logFailureAndExit "Dotfiles directory does not exist: '${DOTFILES_HOME}'"
-  fi
-
-  # Bootstrap local secrets once; preserve existing files and symlinks.
-  if [[ ! -f "$DOTFILES_HOME/.secrets.example" ]]; then
-    logInfo "No .secrets.example in '${DOTFILES_HOME}'; skipping secrets bootstrap"
-  elif [[ ! -e "$DOTFILES_HOME/.secrets" && ! -L "$DOTFILES_HOME/.secrets" ]]; then
-    (umask 077; set -o noclobber; cat "$DOTFILES_HOME/.secrets.example" > "$DOTFILES_HOME/.secrets") ||
-      logFailureAndExit "Failed to create local secrets file"
   fi
 
   if [[ -z ${CONFIG_FILES_TO_REMOVE+x} ]]; then
@@ -183,12 +186,39 @@ function main() {
   logInfo "Starting dotfiles setup..."
   logInfo "Logging to: '${LOGFILE}'"
   logInfo "Dotfiles home: '${DOTFILES_HOME}'"
-  logInfo "Configuration files to remove: '${CONFIG_FILES_TO_REMOVE[*]}'"
+  logInfo "Configuration files to back up: '${CONFIG_FILES_TO_REMOVE[*]}'"
   logInfo "Stow folders: '${STOW_FOLDERS[*]}'"
   logInfo "--------------------------------------------------------------------------------"
   logInfo ""
 
-  removeExistingConfigurationFiles "${CONFIG_FILES_TO_REMOVE[@]}"
+  # Validate every package before moving any existing configuration.
+  command -v stow >/dev/null 2>&1 || logFailureAndExit "GNU Stow is not installed. Please install it first."
+  local gnupg_package="gnupg-linux" folder
+  [[ "$(uname -s)" == "Darwin" ]] && gnupg_package="gnupg-macos"
+  STOW_PACKAGES=("${STOW_FOLDERS[@]}" "$gnupg_package" ssh)
+  for folder in "${STOW_PACKAGES[@]}"; do
+    [[ -d "$DOTFILES_HOME/$folder" ]] || logFailureAndExit "Stow folder does not exist: '${folder}'"
+  done
+
+  BACKUP_DIR=""
+  BACKUP_ORIGINALS=()
+  BACKUP_PATHS=()
+  # Temporarily move conflicts aside for Stow's dry run. If it fails, restore
+  # the originals; after preflight, retain the backups for manual recovery.
+  trap restoreConfigurationBackups EXIT
+  backupExistingConfigurationFiles "$DOTFILES_HOME" "${CONFIG_FILES_TO_REMOVE[@]}" "$HOME/.ssh/config"
+  stow --dir="$DOTFILES_HOME" --target="$HOME" --simulate --restow --no-folding "${STOW_PACKAGES[@]}" ||
+    logFailureAndExit "Stow preflight failed; restoring existing configurations"
+  trap - EXIT
+
+  # Bootstrap local secrets once; preserve existing files and symlinks.
+  if [[ ! -f "$DOTFILES_HOME/.secrets.example" ]]; then
+    logInfo "No .secrets.example in '${DOTFILES_HOME}'; skipping secrets bootstrap"
+  elif [[ ! -e "$DOTFILES_HOME/.secrets" && ! -L "$DOTFILES_HOME/.secrets" ]]; then
+    (umask 077; set -o noclobber; cat "$DOTFILES_HOME/.secrets.example" > "$DOTFILES_HOME/.secrets") ||
+      logFailureAndExit "Failed to create local secrets file"
+  fi
+
   stowDotfiles "${DOTFILES_HOME}" "${STOW_FOLDERS[@]}"
   configureGpgAgent "${DOTFILES_HOME}"
   configureSshConfig "${DOTFILES_HOME}"
