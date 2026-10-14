@@ -10,7 +10,9 @@
 # Environment Variables
 ############################
 
-export TZ="America/New_York"
+# Default timezone only where the system has none configured (e.g. bare
+# containers); macOS and Linux hosts with /etc/localtime keep their own.
+[[ -z "$TZ" && ! -e /etc/localtime ]] && export TZ="America/New_York"
 export LANG="en_US.UTF-8"
 # Used by `less` to display line numbers without having to type `-N` every time.
 export LESS="-R -N -C -M -I -j 10 -# 4"

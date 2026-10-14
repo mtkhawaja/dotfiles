@@ -100,7 +100,6 @@ fi
 # "Permission denied (publickey)". Leave SSH to Bitwarden.
 plugins=(
     "fzf"
-    "z"
     "git"
     "zsh-autosuggestions"
     "zsh-syntax-highlighting"
@@ -111,8 +110,12 @@ plugins=(
     "nvm"
     "node"
     "npm"
-    "tmux"
+    "extract"      # `extract <archive>` unpacks zip, tar.*, 7z, ...
+    "copypath"     # `copypath [path]` copies a path to the clipboard
+    "copybuffer"   # Ctrl-O copies the command line being typed
 )
+[[ "$OSTYPE" == darwin* ]] && plugins+=("macos")   # `cdf`: cd to the front Finder window
+(( $+commands[gh] )) && plugins+=("gh")             # gh completions, only where gh is installed
 
 # Load nvm on first use of nvm/node/npm (saves ~600ms per shell). Node's bin is
 # already on PATH via .zshenv. Must be set before oh-my-zsh is sourced.
@@ -147,6 +150,8 @@ setopt HIST_IGNORE_ALL_DUPS   # drop older duplicates of a command
 setopt HIST_REDUCE_BLANKS     # trim superfluous whitespace before saving
 setopt HIST_VERIFY            # expand !! etc. into the line for confirmation, don't run blind
 setopt SHARE_HISTORY          # share history live across open shells
+setopt EXTENDED_HISTORY       # record when each command ran and how long it took
+setopt HIST_IGNORE_SPACE      # a command typed with a leading space stays out of history
 
 ############################
 # Compilation flags
@@ -175,7 +180,7 @@ alias e="nvim"
 alias nvimdiff='nvim -d'
 alias vim="nvim"
 alias vi="nvim"
-alias oldvim="vim"
+alias oldvim='command vim'   # bypass the vim->nvim alias
 
 # Quality of life
 alias mkdir='mkdir -p'
@@ -184,13 +189,54 @@ alias ...='cd ../..'
 alias reload='exec zsh'          # restart the shell to pick up config changes
 
 # Dotfiles management
-alias df='cd ~/.dotfiles'
+alias dot='cd ~/.dotfiles'   # not `df`, which would hide disk-free
 alias dfs='~/.dotfiles/setup.sh'
+
+# Claude Code (not `cc`, which is the C compiler)
+alias cl='claude'
+alias clc='claude --continue'   # resume the most recent session in this directory
+
+# clone <url|owner/repo> [work|personal]: clone into ~/source-code/<category>/<repo>
+# and cd there; an existing checkout is just entered. Category: the argument if
+# given, else `work` for URLs using the github.com-work SSH alias, else `personal`.
+# owner/repo shorthand uses the SSH alias that matches the category.
+clone() {
+  local src="$1" category="$2"
+  if [[ -z "$src" ]]; then
+    echo "usage: clone <url|owner/repo> [work|personal]" >&2
+    return 2
+  fi
+  [[ -z "$category" && "$src" == *github.com-work:* ]] && category=work
+  category="${category:-personal}"
+  if [[ "$category" != (work|personal) ]]; then
+    echo "clone: category must be work or personal, not '$category'" >&2
+    return 2
+  fi
+  if [[ "$src" =~ '^[^/:]+/[^/:]+$' ]]; then
+    local host=github.com
+    [[ "$category" == work ]] && host=github.com-work
+    src="git@${host}:${src}.git"
+  fi
+  local dest="$HOME/source-code/$category/${${src:t}%.git}"
+  if [[ -d "$dest/.git" ]]; then
+    echo "clone: already cloned, entering $dest"
+  else
+    git clone "$src" "$dest" || return
+  fi
+  cd "$dest"
+}
 
 # Modern CLI replacements (only aliased if the tool is installed, so configs stay portable)
 command -v eza >/dev/null && alias ls='eza --group-directories-first' && alias ll='eza -lah --git'
 command -v bat >/dev/null && alias cat='bat -pp'
-command -v fd  >/dev/null && export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+if (( $+commands[fd] )); then
+  # fzf pickers: Ctrl-T (files) and Alt-C (dirs) use fd; previews use bat/eza.
+  export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
+fi
+(( $+commands[bat] )) && export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :200 {}'"
+(( $+commands[eza] )) && export FZF_ALT_C_OPTS="--preview 'eza --tree --level 2 --color=always {} | head -100'"
 ############################
 # GPG (interactive signing / pinentry)
 ############################
@@ -218,4 +264,19 @@ if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
     unfunction sdk
     source "$SDKMAN_DIR/bin/sdkman-init.sh" && sdk "$@"
   }
+fi
+
+############################
+# zoxide (`z <partial>` jumps to frequent dirs; replaces the oh-my-zsh z plugin)
+############################
+
+# Init output cached; regenerated when zoxide is upgraded. Must run after compinit.
+if (( $+commands[zoxide] )); then
+  _zoxide_init="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zoxide-init.zsh"
+  if [[ ! -s "$_zoxide_init" || "$_zoxide_init" -ot "$commands[zoxide]" ]]; then
+    mkdir -p "${_zoxide_init:h}"
+    zoxide init zsh >| "$_zoxide_init"
+  fi
+  source "$_zoxide_init"
+  unset _zoxide_init
 fi
