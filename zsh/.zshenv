@@ -67,7 +67,12 @@ path=("$SDKMAN_DIR"/candidates/*/current/bin(N) "$NVM_DIR"/versions/node/*/bin(N
 # macOS: route SSH through the Bitwarden desktop app's SSH agent.
 [[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
 
-export PATH="$HOME/.bun/bin:$PATH"
+[[ -d "$HOME/.bun/bin" ]] && path=("$HOME/.bun/bin" $path)
+
+# App-installed CLIs (macOS). Previously appended by Docker Desktop and JetBrains
+# Toolbox to an untracked ~/.zprofile, which only login shells read.
+[[ -d "$HOME/.docker/bin" ]] && path+=("$HOME/.docker/bin")
+[[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]] && path+=("$HOME/Library/Application Support/JetBrains/Toolbox/scripts")
 
 # Go: GOPATH + the toolchain. Only add directories that actually exist so PATH
 # never carries dead entries (consistent on macOS/brew and Linux/tarball installs).
@@ -80,6 +85,11 @@ export GOPATH="$HOME/go"
 [[ -d /usr/local/go/bin ]] && path+=("/usr/local/go/bin")
 
 export PATH
+
+# macOS login shells (what Ghostty and Terminal open) run /etc/zprofile next, whose
+# path_helper moves system dirs ahead of everything above. Remember the order so
+# .zprofile can restore it.
+[[ "$OSTYPE" == darwin* && -o login ]] && _zshenv_path=($path)
 
 # Machine-local secrets, created by setup.sh from .secrets.example in the repo
 # root. Resolve the root through this file's stow symlink (~/.zshenv ->
