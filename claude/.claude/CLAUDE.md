@@ -19,13 +19,18 @@ Unfamiliar tool or unsure of flags? Try `tldr <tool>`, then `<tool> --help`, the
 - **Fix root causes.** Never swallow errors or skip/weaken failing tests to make things pass.
 - **Verify before claiming done.** Run the project's tests, linters, and build, and show evidence —
   never assert success you haven't observed.
+  - Never pipe checks (tests, linters, markdownlint) in a way that hides a non-zero exit; use
+    `set -o pipefail` or run them unpiped.
+  - After UI or layout changes, run the full local e2e suite before committing or pushing. Don't
+    rely on CI to catch regressions.
 
 ## Commits
 
 - Conventional Commits: `type(scope): description`, imperative, lowercase, no trailing period.
 - Prefer small focused commits while working; once done and validated, squash into focused commits
-  that each stand alone — not necessarily one.
-- **Never push without my say-so. Never rewrite pushed history** — squash/amend only unpushed commits.
+  that each stand alone — not necessarily one — with a single version bump per feature.
+- **Never push without my say-so. Never rewrite pushed history.** Rewriting unpushed history (amend,
+  squash, date resets) is fine.
 
 ## Safety
 
