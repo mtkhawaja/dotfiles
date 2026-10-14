@@ -138,7 +138,8 @@ three-row styling, skills count, cache tokens, or timers. Narrow terminals may o
   on PATH in `.zshenv` so scripts and `ssh host 'cmd'` see them; the slow init (the `sdk` function,
   nvm via the oh-my-zsh `nvm` plugin, completions) loads only in `.zshrc`.
 - **SSH agent**: Bitwarden desktop (`$SSH_AUTH_SOCK` set in `.zshenv`; never add the `ssh-agent` plugin)
-- **Homebrew**: initialized in `.zshenv` via `/opt/homebrew/bin/brew shellenv`
+- **Homebrew**: Apple Silicon only (`/opt/homebrew`); `.zshenv` sets the `brew shellenv` exports
+  statically (faster for every shell — see the comment there)
 
 ## Adding a New Package
 

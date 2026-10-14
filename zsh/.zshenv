@@ -30,11 +30,22 @@ path+=("$HOME/.local/bin")
 # Linux/WSL: dev-environment installs the Bitwarden CLI here (macOS gets `bw` via brew).
 [[ -d "$HOME/.local/bin/tools/bitwarden/bin" ]] && path+=("$HOME/.local/bin/tools/bitwarden/bin")
 
-# Homebrew (Apple Silicon, then Intel). Skipped on Linux/WSL, where dev-environment uses apt.
+# Homebrew (Apple Silicon only). Skipped on Linux/WSL, where dev-environment uses apt.
+#
+# The exports below are the output of `brew shellenv zsh`, written out
+# instead of eval'd. Running `brew shellenv` costs ~25ms, and .zshenv runs for every zsh,
+# including scripts and `ssh host 'cmd'` (static: ~4ms vs ~29ms). If Homebrew ever behaves
+# oddly after an upgrade (missing commands, man pages, or completions), compare these lines
+# with `brew shellenv zsh`, or switch back to `eval "$(/opt/homebrew/bin/brew shellenv)"`.
 if [[ -x /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -x /usr/local/bin/brew ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
+  export HOMEBREW_PREFIX="/opt/homebrew"
+  export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+  export HOMEBREW_REPOSITORY="/opt/homebrew"
+  fpath[1,0]="/opt/homebrew/share/zsh/site-functions"
+  export FPATH
+  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}"
+  [ -z "${MANPATH-}" ] || { export MANPATH="${MANPATH%"${MANPATH##*[!:]}"}"; export MANPATH=":${MANPATH#"${MANPATH%%[!:]*}"}"; }
+  export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
 fi
 
 ############################

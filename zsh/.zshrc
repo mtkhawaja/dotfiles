@@ -114,6 +114,26 @@ plugins=(
     "tmux"
 )
 
+# Load nvm on first use of nvm/node/npm (saves ~600ms per shell). Node's bin is
+# already on PATH via .zshenv. Must be set before oh-my-zsh is sourced.
+zstyle ':omz:plugins:nvm' lazy yes
+
+# Skip oh-my-zsh's per-start compaudit (~15ms): it only flags completion dirs that
+# other users can write to, which doesn't apply on a single-user machine.
+ZSH_DISABLE_COMPFIX=true
+
+# uv/uvx/bun completions load on first <Tab> from this fpath dir instead of being
+# sourced every start. _uv/_uvx are regenerated when the uv binary changes.
+_zcomp="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
+if (( $+commands[uv] )) && [[ ! -s "$_zcomp/_uv" || "$_zcomp/_uv" -ot "$commands[uv]" ]]; then
+  mkdir -p "$_zcomp"
+  uv generate-shell-completion zsh >| "$_zcomp/_uv"
+  uvx --generate-shell-completion zsh >| "$_zcomp/_uvx"
+fi
+[[ -s "$HOME/.bun/_bun" && ! -e "$_zcomp/_bun" ]] && mkdir -p "$_zcomp" && ln -s "$HOME/.bun/_bun" "$_zcomp/_bun"
+fpath=("$_zcomp" $fpath)
+unset _zcomp
+
 source $ZSH/oh-my-zsh.sh
 
 ############################
@@ -175,9 +195,9 @@ command -v fd  >/dev/null && export FZF_DEFAULT_COMMAND='fd --type f --hidden --
 # GPG (interactive signing / pinentry)
 ############################
 
-# Tell gpg-agent which terminal to prompt on. Lives here, not .zshenv, because
-# $(tty) assumes an attached terminal and .zshenv must stay tty-free.
-export GPG_TTY=$(tty)
+# Tell gpg-agent which terminal to prompt on. Lives here, not .zshenv, because it
+# assumes an attached terminal and .zshenv must stay tty-free. $TTY avoids forking tty(1).
+export GPG_TTY=$TTY
 
 ############################
 # Key Bindings Completion
@@ -185,21 +205,17 @@ export GPG_TTY=$(tty)
 
 # Ctrl + Space for zsh auto-completion
 bindkey '^ ' autosuggest-accept
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# uv (Astral) completions
-if command -v uv >/dev/null; then
-  eval "$(uv generate-shell-completion zsh)"
-  eval "$(uvx --generate-shell-completion zsh)"
-fi
 
 ############################
 # Version Managers
 ############################
 
-# PATH entries live in .zshenv (so scripts/ssh see them); this only loads the
-# `sdk` function and completions. nvm is loaded by the oh-my-zsh `nvm` plugin,
-# ordered before `npm` so that plugin finds npm on PATH.
-# Keep SDKMAN initialization at the end of the file.
-[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+# PATH entries live in .zshenv (so scripts/ssh see them). Both managers load on
+# first use: nvm via the oh-my-zsh plugin's lazy mode (above), and sdkman via
+# this stub, which sources sdkman-init (~600ms) the first time `sdk` runs.
+if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
+  sdk() {
+    unfunction sdk
+    source "$SDKMAN_DIR/bin/sdkman-init.sh" && sdk "$@"
+  }
+fi
