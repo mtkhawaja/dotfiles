@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# ui-check — render a page at several widths and run layout checks.
+# Usage: ui-check <url-or-file> [--widths 1280,768,375] [--storage-state FILE] [--out DIR]
+# Implementation: ../ui-check/ui-check.ts (Bun + pinned playwright-core).
+set -euo pipefail
+
+dir="$(cd "$(dirname "$(readlink -f "$0")")/../ui-check" && pwd)"
+[[ -d "${dir}/node_modules" ]] || bun install --cwd "${dir}" --frozen-lockfile --silent
+exec bun "${dir}/ui-check.ts" "$@"

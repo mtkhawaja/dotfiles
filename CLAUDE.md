@@ -107,7 +107,8 @@ deliberately allowed to fold.
 
 Tracks only the **portable** parts of `~/.claude/`: `settings.json` (model, hooks, statusLine,
 `enabledPlugins`, `extraKnownMarketplaces`, theme), a global `CLAUDE.md`, and `commands/`,
-`agents/`, `skills/`. Stow uses `--no-folding` to keep runtime directories outside the repo;
+`agents/`, `skills/`, `hooks/` (scripts `settings.json` hooks call, e.g. the `ui-check` Stop
+hook, which uses `bin/.local/bin/scripts/utility/ui-check`). Stow uses `--no-folding` to keep runtime directories outside the repo;
 rerun setup after adding files to these packages. Tracking
 `settings.json` is what makes enabled plugins carry to a fresh install — Claude Code re-clones
 them from `enabledPlugins`/`extraKnownMarketplaces` on next launch.

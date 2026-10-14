@@ -17,3 +17,6 @@ settings.local.json
 
 # Synced skill copies; keep authored skills trackable
 /claude/.claude/skills/synced/
+
+# Package installs (e.g. bin/.local/bin/scripts/ui-check)
+node_modules/
