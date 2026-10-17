@@ -22,16 +22,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/ui-check-stop.sh"
-          }
-        ]
-      }
     ]
   },
   "statusLine": {
@@ -77,6 +67,5 @@
     }
   },
   "autoDreamEnabled": false,
-  "skipDangerousModePermissionPrompt": true,
   "theme": "dark"
 }

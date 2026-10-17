@@ -7,6 +7,7 @@
 #   check.sh lint     shellcheck + markdownlint + static (needs shellcheck, npx, jq)
 #   check.sh static   bash -n + zsh -n syntax + JSON parse (needs bash, zsh, jq;
 #                     the shellcheck/markdownlint steps run in CI as pinned actions)
+#   check.sh test     unit tests in tests/ (needs python3, git, ssh-agent, ssh-keygen)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -106,6 +107,11 @@ check_markdown() {
   npx --yes markdownlint-cli2@0.22.1 "**/*.md"
 }
 
+check_tests() {
+  say "unit tests (tests/)"
+  python3 -m unittest discover -s tests
+}
+
 # --- entrypoints ---
 
 run_static() {
@@ -124,12 +130,21 @@ run_lint() {
   run_static
 }
 
+run_test() {
+  require python3
+  require git
+  require ssh-agent
+  require ssh-keygen
+  check_tests
+}
+
 main() {
   case "${1:-lint}" in
     lint) run_lint ;;
     static) run_static ;;
+    test) run_test ;;
     *)
-      err "unknown check group '$1' (expected: lint, static)"
+      err "unknown check group '$1' (expected: lint, static, test)"
       exit 1
       ;;
   esac

@@ -66,8 +66,11 @@ export NVM_DIR="$HOME/.nvm"
 typeset -U path
 path=("$SDKMAN_DIR"/candidates/*/current/bin(N) "$NVM_DIR"/versions/node/*/bin(Nn[-1]) $path)
 
-# macOS: route SSH through the Bitwarden desktop app's SSH agent.
-[[ "$OSTYPE" == darwin* ]] && export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+# macOS with Bitwarden installed: route SSH through its desktop SSH agent (see
+# ~/.ssh/config for GUI apps). Otherwise keep the machine's own agent.
+_bw="$HOME/Library/Containers/com.bitwarden.desktop"
+[[ "$OSTYPE" == darwin* && -d "$_bw" ]] && export SSH_AUTH_SOCK="$_bw/Data/.bitwarden-ssh-agent.sock"
+unset _bw
 
 [[ -d "$HOME/.bun/bin" ]] && path=("$HOME/.bun/bin" $path)
 

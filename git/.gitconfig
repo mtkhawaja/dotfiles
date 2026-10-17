@@ -1,19 +1,7 @@
-[user]
-    email = 36654508+mtkhawaja@users.noreply.github.com
-    name = Muneeb Khawaja
-	signingkey = 535C84F6751CC5C4
-
-# Work identity override: applied automatically to any repo whose remote uses the
-# github.com-work SSH alias (see ssh/.ssh/config.d). The real work identity lives in
-# the git-ignored ~/.gitconfig.d/work.config — see ~/.gitconfig.d/README.md.
-[includeIf "hasconfig:remote.*.url:git@github.com-work:*/**"]
-    path = ~/.gitconfig.d/work.config
-
-# Belt and braces. The condition above keys off the remote URL, so it cannot fire
-# for a work repo cloned over HTTPS, or for a `git init` that has no remote yet —
-# both silently fall back to the personal identity above. Location catches those.
-[includeIf "gitdir:~/source-code/work/"]
-    path = ~/.gitconfig.d/work.config
+# Default identity everywhere: personal. Machine and per-account overrides are
+# included at the end of this file.
+[include]
+    path = ~/.gitconfig.d/personal.config
 
 [core]
 	editor = nvim
@@ -97,3 +85,27 @@
     last = log -1 HEAD
     fp = fetch --prune
     rv = remote -v
+    # Manage extra identities (GitHub orgs, Bitbucket, GitLab): git account --help
+    account = !git-account.py
+
+# Identity and machine-specific overrides — keep these last so they win. Later
+# includes override earlier ones, so the order below matters. Missing files are
+# skipped silently. See ~/.gitconfig.d/README.md.
+#
+# 1. Machine overrides (git-ignored; optional). setup.sh moves a pre-existing
+#    ~/.gitconfig here. Put anything this machine needs differently in it, e.g. a
+#    different default identity:  [user] email = me@corp.com
+[include]
+    path = ~/.gitconfig.d/local.config
+
+# 2. github.com remotes are personal even if local.config changed the default.
+[includeIf "hasconfig:remote.*.url:git@github.com:*/**"]
+    path = ~/.gitconfig.d/personal.config
+[includeIf "hasconfig:remote.*.url:https://github.com/**"]
+    path = ~/.gitconfig.d/personal.config
+
+# 3. Other accounts (GitHub orgs, Bitbucket, ...), each selected by its folder
+#    (~/source-code/<name>/), SSH alias, or URL patterns. Git-ignored; managed by
+#    `git account` (see ~/.gitconfig.d/README.md).
+[include]
+    path = ~/.gitconfig.d/accounts.config

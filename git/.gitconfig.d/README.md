@@ -1,111 +1,58 @@
-# `~/.gitconfig.d/` — private git config includes
+# `~/.gitconfig.d/` — git identities
 
-The tracked `~/.gitconfig` is the **personal** identity. Work (and any other)
-identities are kept out of version control here and pulled in via git's
-`includeIf`, mirroring the SSH split in `~/.ssh/config.d/`.
+The tracked `~/.gitconfig` defaults to the **personal** identity. Other accounts
+(GitHub orgs, Bitbucket, GitLab, self-hosted) take over per repo, selected by
+folder or remote. Everything here except `personal.config`, the sample and this README
+is git-ignored.
 
-This directory is tracked in dotfiles but its contents are git-ignored (see
-`.gitignore`) — **except** `README.md` and `work.config.example`. So the folder
-always exists after `stow`, your real `*.config` files stay local, and nothing
-private is ever accidentally committed.
+| File | Purpose |
+|---|---|
+| `personal.config` | Personal identity (tracked): the default, and forced for `github.com` remotes |
+| `local.config` | Optional machine overrides, e.g. a different default identity |
+| `<name>.config` | One account's `[user]` identity |
+| `accounts.config` | The `includeIf` rules that select each account; managed by `git account` (sample: `accounts.config.example`) |
 
-- `work.config.example` — sample work include; copy to `work.config` and edit.
-- `README.md` — this guide.
+`~/.gitconfig` includes them in that order, and later ones win.
 
-## How the split works
+## Accounts
 
-`~/.gitconfig` ends the `[user]` block with a conditional include:
-
-```ini
-[includeIf "hasconfig:remote.*.url:git@github.com-work:*/**"]
-    path = ~/.gitconfig.d/work.config
+```bash
+git account add work bitbucket me@corp.com      # every Bitbucket remote is work
+git account add acme github me@acme.com         # GitHub org account; prompts for the SSH key
+git account add corp git.corp.com me@corp.com   # self-hosted
+git account list
+git account remove acme [--purge]               # --purge also deletes its files
 ```
 
-`hasconfig:remote.*.url:<pattern>` matches when the repository has a remote whose
-URL matches the pattern. `*/**` matches the `owner/repo` path (and any deeper
-path). Note git's `**` only spans `/` when adjacent to one (`/**`, `**/`); a bare
-`**` after the colon acts like `*` and won't cross the slash — hence `*/**`. Because work repos are cloned through the
-`github.com-work` SSH alias (see `~/.ssh/config.d/`), any such repo automatically
-loads `work.config`, whose `[user]` block overrides the personal email/name.
-Personal repos (plain `github.com`) don't match, so they keep the personal
-identity. **No directory convention required** — identity follows the remote.
+`git account --help` lists every option. An account is selected by:
 
-Includes apply in file order, so the `includeIf` sits *after* the personal
-`[user]` block; when it matches, its values win.
+- **Folder**: anything under `~/source-code/<name>/`, with or without a remote.
+  The most reliable rule: immune to HTTPS clones, `git init` before
+  `git remote add`, and host renames.
+- **Remote** (`--match` overrides the default):
+  - `host` (Bitbucket's default): every remote on that host, SSH or HTTPS. For a
+    host you have one account on. Covers both `ssh.bitbucket.org` and legacy
+    `git@bitbucket.org` ([host change](https://community.atlassian.com/forums/discussion/3234032/upcoming-change-to-bitbucket-cloud-ssh-access-move-from-bitbucket-org-to-ssh-bitbucket-org)).
+  - `alias` (default otherwise): only remotes using the SSH alias
+    `<host>-<name>`. For hosts shared by several accounts, like GitHub.
 
-## Setup
+`add` writes the identity, the SSH entry (`~/.ssh/config.d/<name>.conf`) and the
+rules, then self-checks that git and ssh resolve to the new account, exiting
+non-zero if not. It refuses a remote rule another account already has, since git
+and ssh would then disagree. Re-running it updates the account in place; lines you
+add to `accounts.config` outside the `# >>> account:` blocks are kept.
 
-1. Copy the template:
-
-   ```bash
-   cp ~/.gitconfig.d/work.config.example ~/.gitconfig.d/work.config
-   ```
-
-2. Set your work email (and optionally name / signing key) in `work.config`.
-3. Clone work repos through the work alias so the include triggers:
-
-   ```bash
-   git clone git@github.com-work:<org>/<repo>.git
-   ```
+`clone <owner/repo|url> [account]` (in `.zshrc`) infers the account from the URL
+and clones into `~/source-code/<account>/`.
 
 ## Verify
 
-Inside a work repo (remote uses `github.com-work`):
-
 ```bash
-git config user.email      # -> your work email
+git config --show-origin --get user.email   # which file supplied the identity
 ```
 
-Inside a personal repo (remote uses `github.com`):
+## Signing keys
 
-```bash
-git config user.email      # -> 36654508+mtkhawaja@users.noreply.github.com
-```
-
-To see *which* file supplied the value (useful when a repo picks the identity you
-did not expect):
-
-```bash
-git config --show-origin --get user.email
-```
-
-## Where matching on the remote falls short
-
-`hasconfig:remote.*.url` can only fire once a matching remote exists. Two cases
-slip through, and both fail **silently** by falling back to the personal identity:
-
-| Case | Why it misses |
-|---|---|
-| Work repo cloned over **HTTPS** | The URL is `https://github.com/owner/repo.git`, which never matches the `git@github.com-work:` pattern. `gh repo clone`, IDE clone dialogs and CI checkouts all default to HTTPS. |
-| `git init` **before** `git remote add` | There is no remote yet, so the condition cannot match. Commits made in that window carry the personal identity and keep it after the remote is added. |
-
-So `~/.gitconfig` pairs the remote condition with a **location** condition:
-
-```ini
-[includeIf "gitdir:~/source-code/work/"]
-    path = ~/.gitconfig.d/work.config
-```
-
-Anything under `~/source-code/work/` gets the work identity regardless of remote
-(or absence of one). The trailing slash matters: it matches the directory and
-everything beneath it. The two conditions are complementary, not redundant — the
-remote condition covers work repos cloned outside that tree, the directory
-condition covers repos whose remote cannot be matched.
-
-To convert an HTTPS remote to its SSH form, `git-remotes-to-ssh.sh` (in
-`bin/.local/bin/scripts/utility/`) rewrites it — but it maps the host literally,
-so `https://github.com/...` becomes the **personal** `git@github.com:...`. For a
-work repo, set the alias by hand:
-
-```bash
-git remote set-url origin git@github.com-work:<owner>/<repo>.git
-```
-
-## Signing keys are not part of the split
-
-`user.signingkey` lives in the personal `[user]` block and therefore applies in
-work repos too. Nothing is signed automatically (`commit.gpgsign` is unset), so
-this is latent rather than active — but if a work org ever requires signed
-commits, they would be signed with the personal key. `work.config.example` has a
-commented `signingkey` line for that reason; uncomment it and set a work key
-before enabling signing on work repos.
+Accounts inherit `user.signingkey` from `personal.config` unless their
+`<name>.config` sets one. Nothing is signed automatically (`commit.gpgsign` is
+unset); set an account's own key before enabling signing for it.

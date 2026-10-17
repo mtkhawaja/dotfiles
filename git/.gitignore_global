@@ -30,6 +30,29 @@ __pycache__/
 *.secrets
 .vault-token
 
+# AWS: access keys and cached SSO/CLI session tokens. .credentials.* covers
+# aws-creds-to-default.py's temp file should a write ever be interrupted.
+**/.aws/credentials
+**/.aws/sso/cache/
+**/.aws/cli/cache/
+.credentials.*
+.boto
+.s3cfg
+
+# Credential stores that hold plaintext passwords or tokens
+.git-credentials
+.netrc
+_netrc
+.pgpass
+.my.cnf
+
+# SSH private keys (the .pub halves stay committable)
+id_rsa
+id_ecdsa
+id_ecdsa_sk
+id_ed25519
+id_ed25519_sk
+
 # Keys / certificates / keystores
 *.pem
 *.key

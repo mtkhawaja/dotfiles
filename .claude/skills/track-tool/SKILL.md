@@ -63,7 +63,7 @@ STOW_FOLDERS=(
 If the target is not `$HOME`, write a dedicated install script (follow the `install_ghostty_config.sh` pattern) and **do
 not** add it to `STOW_FOLDERS`.
 
-### 6. Update CLAUDE.md
+### 6. Update AGENTS.md
 
 Add a row to the Package Layout table:
 
@@ -83,7 +83,7 @@ set -e
 stow --target="$HOME/Library/Application Support/<tool>" --dir=. <tool>
 ```
 
-Save as `install_<tool>.sh`, make it executable, and document it in the Setup section of CLAUDE.md.
+Save as `install_<tool>.sh`, make it executable, and document it in the Setup section of AGENTS.md.
 
 ## Quick verification
 

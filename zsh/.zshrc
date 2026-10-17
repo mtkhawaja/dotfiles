@@ -196,25 +196,42 @@ alias dfs='~/.dotfiles/setup.sh'
 alias cl='claude'
 alias clc='claude --continue'   # resume the most recent session in this directory
 
-# clone <url|owner/repo> [work|personal]: clone into ~/source-code/<category>/<repo>
-# and cd there; an existing checkout is just entered. Category: the argument if
-# given, else `work` for URLs using the github.com-work SSH alias, else `personal`.
-# owner/repo shorthand uses the SSH alias that matches the category.
+# clone <url|owner/repo> [account]: clone into ~/source-code/<account>/<repo> and
+# cd there; an existing checkout is just entered. Account: the argument if given,
+# else the account whose remote rules (from `git account add`) match the URL, else
+# `personal`. owner/repo shorthand uses the host from the account's
+# ~/.ssh/config.d/<account>.conf (personal: github.com). The ~/source-code/<account>/
+# folder then selects the identity whatever the remote looks like.
 clone() {
-  local src="$1" category="$2"
+  local src="$1" category="$2" line acct pat
+  local rule='[includeIf "hasconfig:remote.*.url:' header='# >>> account: '
   if [[ -z "$src" ]]; then
-    echo "usage: clone <url|owner/repo> [work|personal]" >&2
+    echo "usage: clone <url|owner/repo> [account]" >&2
     return 2
   fi
-  [[ -z "$category" && "$src" == *github.com-work:* ]] && category=work
+  if [[ -z "$category" && -r "$HOME/.gitconfig.d/accounts.config" ]]; then
+    while IFS= read -r line; do
+      [[ "$line" == "$header"* ]] && acct="${line#"$header"}"
+      [[ "$line" == "$rule"* ]] || continue
+      pat=${line#"$rule"}
+      pat=${pat%'"]'}
+      [[ "$src" == ${~pat} ]] && { category="$acct"; break }
+    done < "$HOME/.gitconfig.d/accounts.config"
+  fi
   category="${category:-personal}"
-  if [[ "$category" != (work|personal) ]]; then
-    echo "clone: category must be work or personal, not '$category'" >&2
+  if [[ "$category" != personal && ! -f "$HOME/.gitconfig.d/$category.config" ]]; then
+    echo "clone: unknown account '$category' (see: git account list)" >&2
     return 2
   fi
   if [[ "$src" =~ '^[^/:]+/[^/:]+$' ]]; then
     local host=github.com
-    [[ "$category" == work ]] && host=github.com-work
+    if [[ "$category" != personal ]]; then
+      host="$(awk '$1 == "Host" { print $2; exit }' "$HOME/.ssh/config.d/$category.conf" 2>/dev/null)"
+      if [[ -z "$host" ]]; then
+        echo "clone: no SSH alias for '$category'; pass a full URL" >&2
+        return 2
+      fi
+    fi
     src="git@${host}:${src}.git"
   fi
   local dest="$HOME/source-code/$category/${${src:t}%.git}"

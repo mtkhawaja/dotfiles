@@ -25,7 +25,7 @@ Which startup file a change belongs in is decided by **two independent axes** of
 - **A new startup file** (e.g. first-time `.zlogin`, or any bash file) must be created **inside the stow package**, then
   stowed (`./setup.sh`). A file dropped directly in `$HOME` is untracked and unmanaged.
 - This repo currently ships **zsh only**. Bash files belong in a `bash/` stow package — create it mirroring `zsh/` and
-  register it (see `track-tool` / CLAUDE.md "Adding a New Package"). Do not invent ad-hoc paths.
+  register it (see `track-tool` / AGENTS.md "Adding a New Package"). Do not invent ad-hoc paths.
 - **Edits must be idempotent** (guard with `[[ -d … ]]`, `command -v`, etc.) and **`.zshenv` must stay tty-free**: no
   output, no prompts, no commands assuming a terminal.
 

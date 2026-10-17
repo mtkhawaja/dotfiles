@@ -19,8 +19,9 @@
 # What:
 #   Read the clipboard, drop the leading [profile] header, and write the
 #   aws_* keys under [default] in ~/.aws/credentials (created 700/600 if absent).
-#   By default other profiles in the file are preserved and only [default] is
-#   replaced; --overwrite truncates the file to just [default].
+#   By default only [default]'s keys are replaced; other profiles and all
+#   comments are kept as they are, and a malformed file is refused rather than
+#   rewritten. --overwrite truncates the file to just [default].
 #
 # Dependencies: Python 3 standard library only. The clipboard is read by
 #   shelling out to the OS clipboard tool (pbpaste / wl-paste / xclip / xsel),
@@ -111,8 +112,8 @@ def parse_credentials(text: str) -> dict[str, str]:
     return {key: creds[key] for key in KNOWN_KEYS if key in creds}
 
 
-def _write_secure(config: configparser.ConfigParser, path: str) -> None:
-    """Atomically replace config as 0600, preserving an existing symlink."""
+def _write_secure(text: str, path: str) -> None:
+    """Atomically replace path with text as 0600, preserving an existing symlink."""
     path = os.path.realpath(path)
     directory = os.path.dirname(path)
     os.makedirs(directory, mode=0o700, exist_ok=True)
@@ -120,14 +121,13 @@ def _write_secure(config: configparser.ConfigParser, path: str) -> None:
     fd, temporary_path = tempfile.mkstemp(prefix=".credentials.", dir=directory)
     try:
         with os.fdopen(fd, "w") as handle:
-            config.write(handle, space_around_delimiters=False)
+            handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary_path, path)
-        temporary_path = None
-    finally:
-        if temporary_path is not None:
-            os.unlink(temporary_path)
+    except BaseException:
+        os.unlink(temporary_path)  # never leave a stray copy of the secrets behind
+        raise
 
 
 def _preserved_note(preserved: list[str]) -> str:
@@ -137,24 +137,91 @@ def _preserved_note(preserved: list[str]) -> str:
     return f"  ({len(preserved)} other profile(s) preserved: {', '.join(preserved)})"
 
 
-def write_credentials(
-    creds: dict[str, str], path: str, overwrite: bool, dry_run: bool
-) -> None:
+def _profiles(text: str, path: str) -> list[str]:
+    """Return the profile names in an existing credentials file, or die if malformed.
+
+    Parsing only validates; the file is edited as text so comments survive.
+    Errors name the line but never echo it: the file holds secrets.
+    """
     # interpolation=None: credential values are opaque literals; a '%' in a
     # secret/token must not be parsed as configparser interpolation syntax.
     config = configparser.ConfigParser(interpolation=None)
-    # Keep existing profiles unless we're overwriting the whole file.
+    try:
+        config.read_string(text, source=path)
+    except configparser.MissingSectionHeaderError as exc:
+        reason = f"line {exc.lineno}: no section header before it"
+    except configparser.DuplicateSectionError as exc:
+        reason = f"line {exc.lineno}: duplicate section [{exc.section}]"
+    except configparser.DuplicateOptionError as exc:
+        reason = (
+            f"line {exc.lineno}: duplicate option '{exc.option}' "
+            f"in [{exc.section}]"
+        )
+    except configparser.ParsingError as exc:
+        lines = ", ".join(str(lineno) for lineno, _ in exc.errors)
+        reason = f"unparsable line(s) {lines}"
+    except configparser.Error:
+        reason = "unreadable"
+    else:
+        return config.sections()
+    die(
+        f"{path} is not a valid credentials file ({reason}); "
+        "fix it or use --overwrite"
+    )
+
+
+def _is_header(line: str) -> bool:
+    stripped = line.strip()
+    return stripped.startswith("[") and stripped.endswith("]")
+
+
+def _is_comment_or_blank(line: str) -> bool:
+    stripped = line.strip()
+    return not stripped or stripped.startswith(("#", ";"))
+
+
+def _replace_default(text: str, creds: dict[str, str]) -> str:
+    """Return text with [default]'s keys replaced by creds, every other line kept.
+
+    Comments and blank lines inside [default] are kept too (a comment just above
+    the next profile usually describes that profile); only its key lines, and
+    their indented continuation lines, are replaced. Appends [default] if absent.
+    """
+    entries = [f"{key}={value}" for key, value in creds.items()]
+    lines = text.splitlines()
+    result: list[str] = []
+    in_default = found = False
+    for line in lines:
+        if _is_header(line):
+            in_default = line.strip()[1:-1] == "default"
+            result.append(line)
+            if in_default:
+                found = True
+                result += entries
+        elif not in_default or _is_comment_or_blank(line):
+            result.append(line)
+    if not found:
+        if result and result[-1].strip():
+            result.append("")
+        result += ["[default]", *entries]
+    return "\n".join(result) + "\n"
+
+
+def write_credentials(
+    creds: dict[str, str], path: str, overwrite: bool, dry_run: bool
+) -> None:
+    # Keep existing profiles and comments unless overwriting the whole file.
+    existing = ""
     if not overwrite and os.path.exists(path):
-        config.read(path)
+        with open(path) as handle:
+            existing = handle.read()
+    profiles = _profiles(existing, path)
 
-    # Replace [default] wholesale so stale keys (e.g. an old session token)
-    # from a previous paste don't linger.
-    config.remove_section("default")
-    config.add_section("default")
-    for key, value in creds.items():
-        config.set("default", key, value)
+    # Replace [default]'s keys wholesale so stale ones (e.g. an old session
+    # token) from a previous paste don't linger.
+    text = _replace_default(existing, creds)
 
-    preserved = [section for section in config.sections() if section != "default"]
+    preserved = [profile for profile in profiles if profile != "default"]
     note = _preserved_note(preserved)
 
     if dry_run:
@@ -166,7 +233,7 @@ def write_credentials(
             logger.info(note)
         return
 
-    _write_secure(config, path)
+    _write_secure(text, path)
     logger.info("wrote [default] to %s", path)
     if note:
         logger.info(note)

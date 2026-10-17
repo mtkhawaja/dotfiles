@@ -1,0 +1,39 @@
+# Sample of the git-ignored accounts.config that `git account add` writes; the
+# real file is created on first use, so there's no need to copy this.
+# Each block selects one account's identity (<name>.config) by folder or remote.
+# `git account` rewrites only the lines between its >>> / <<< markers; anything
+# outside them is yours and kept as is.
+
+# git account add acme github me@acme.com
+#   GitHub is shared by several accounts, so only the SSH alias selects acme.
+# >>> account: acme
+[includeIf "gitdir:~/source-code/acme/"]
+    path = ~/.gitconfig.d/acme.config
+[includeIf "hasconfig:remote.*.url:git@github.com-acme:*/**"]
+    path = ~/.gitconfig.d/acme.config
+[includeIf "hasconfig:remote.*.url:ssh://git@github.com-acme/**"]
+    path = ~/.gitconfig.d/acme.config
+# <<< account: acme
+
+# git account add work bitbucket me@corp.com
+#   One account on Bitbucket, so every Bitbucket remote (SSH or HTTPS) is work.
+# >>> account: work
+[includeIf "gitdir:~/source-code/work/"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:git@ssh.bitbucket.org:*/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:ssh://git@ssh.bitbucket.org/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:ssh://git@ssh.bitbucket.org:*/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:git@bitbucket.org:*/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:ssh://git@bitbucket.org/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:ssh://git@bitbucket.org:*/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:https://bitbucket.org/**"]
+    path = ~/.gitconfig.d/work.config
+[includeIf "hasconfig:remote.*.url:https://*@bitbucket.org/**"]
+    path = ~/.gitconfig.d/work.config
+# <<< account: work

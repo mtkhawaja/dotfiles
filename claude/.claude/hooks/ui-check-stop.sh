@@ -3,6 +3,11 @@
 # Stop hook: if this session edited UI files and hasn't run ui-check since the
 # last such edit, block once and ask Claude to render and check its work.
 # Silent (zero context) in sessions that never touch UI files.
+#
+# Opt-in per project (not enabled globally): add to the project's
+# .claude/settings.json (shared) or .claude/settings.local.json (just you):
+#   { "hooks": { "Stop": [ { "hooks": [
+#       { "type": "command", "command": "~/.claude/hooks/ui-check-stop.sh" } ] } ] } }
 set -euo pipefail
 
 # shellcheck disable=SC2016 # backticks are literal Markdown in the message

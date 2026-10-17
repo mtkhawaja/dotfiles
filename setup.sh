@@ -128,24 +128,52 @@ function configureGpgAgent() {
   fi
 }
 
-# Stow ~/.ssh/config (+ tracked public keys) while keeping ~/.ssh a real directory.
-# Work GitHub accounts and private servers go in ~/.ssh/config.d/*.conf, which the
-# tracked config Includes but which is deliberately NOT version-controlled here.
+# Link ~/.ssh/config (+ tracked public keys) while keeping ~/.ssh a real directory.
+# Existing files are never overwritten. Work GitHub accounts and private servers go
+# in ~/.ssh/config.d/*.conf, which the tracked config Includes but which is
+# deliberately NOT version-controlled here.
 function configureSshConfig() {
   local dotfiles_home="$1"
   local ssh_dir="$HOME/.ssh"
+  local src_dir src target
 
-  # Ensure ~/.ssh itself is a real dir with safe perms BEFORE stowing, so stow links
-  # files *inside* it (config, *.pub) instead of folding ~/.ssh into a repo symlink
-  # (which would drag known_hosts / control sockets under version control).
-  # config.d is intentionally NOT pre-created: stow folds ~/.ssh/config.d into a
-  # symlink to the repo's tracked-but-git-ignored ssh/.ssh/config.d, so private
-  # includes dropped there are guaranteed a home yet never committed.
+  # Keep ~/.ssh a real dir with safe perms so files are linked *inside* it, rather
+  # than folding ~/.ssh into a repo symlink (which would drag known_hosts / control
+  # sockets under version control). config.d itself IS linked as a whole, to the
+  # repo's tracked-but-git-ignored ssh/.ssh/config.d, so private includes dropped
+  # there are guaranteed a home yet never committed.
   mkdir -p "$ssh_dir"
   chmod 700 "$ssh_dir"
 
-  # Pre-existing SSH config is backed up with the other configs before preflight.
-  stowDotfiles "$dotfiles_home" "ssh"
+  src_dir="$(cd "$dotfiles_home/ssh/.ssh" && pwd)" || logFailureAndExit "Missing ssh package in: '${dotfiles_home}'"
+  for src in "$src_dir"/* "$src_dir"/.[!.]*; do
+    [[ -e "$src" ]] || continue
+    target="$ssh_dir/${src##*/}"
+    if [[ "$target" -ef "$src" ]]; then
+      continue
+    elif [[ -e "$target" || -L "$target" ]]; then
+      logInfo "WARNING: '${target}' already exists; leaving it untouched"
+    else
+      ln -s "$src" "$target" || logFailureAndExit "Failed to link '${target}'"
+      logSuccess "Linked '${target}'"
+    fi
+  done
+}
+
+# Migrate a pre-existing ~/.gitconfig (backed up this run) into the git-ignored
+# ~/.gitconfig.d/local.config, which the tracked ~/.gitconfig includes, so the
+# machine's own identity and settings survive. A missing local.config is fine.
+function configureGitLocalConfig() {
+  local local_config="$HOME/.gitconfig.d/local.config" i
+
+  [[ -e "$local_config" || -L "$local_config" ]] && return 0
+  for i in "${!BACKUP_ORIGINALS[@]}"; do
+    if [[ "${BACKUP_ORIGINALS[i]}" == "$HOME/.gitconfig" ]]; then
+      (umask 077; set -o noclobber; cat "${BACKUP_PATHS[i]}" > "$local_config") ||
+        logFailureAndExit "Failed to create '${local_config}'"
+      logSuccess "Migrated your previous ~/.gitconfig to '${local_config}'"
+    fi
+  done
 }
 
 function main() {
@@ -163,6 +191,7 @@ function main() {
       "$HOME/.gitconfig"
       "$HOME/.gitignore_global"
       "$HOME/.claude/settings.json"
+      "$HOME/.config/ccstatusline/settings.json"
     )
   fi
 
@@ -195,8 +224,9 @@ function main() {
   command -v stow >/dev/null 2>&1 || logFailureAndExit "GNU Stow is not installed. Please install it first."
   local gnupg_package="gnupg-linux" folder
   [[ "$(uname -s)" == "Darwin" ]] && gnupg_package="gnupg-macos"
-  STOW_PACKAGES=("${STOW_FOLDERS[@]}" "$gnupg_package" ssh)
-  for folder in "${STOW_PACKAGES[@]}"; do
+  # ssh is linked by configureSshConfig, which skips existing files instead of stowing.
+  STOW_PACKAGES=("${STOW_FOLDERS[@]}" "$gnupg_package")
+  for folder in "${STOW_PACKAGES[@]}" ssh; do
     [[ -d "$DOTFILES_HOME/$folder" ]] || logFailureAndExit "Stow folder does not exist: '${folder}'"
   done
 
@@ -206,7 +236,7 @@ function main() {
   # Temporarily move conflicts aside for Stow's dry run. If it fails, restore
   # the originals; after preflight, retain the backups for manual recovery.
   trap restoreConfigurationBackups EXIT
-  backupExistingConfigurationFiles "$DOTFILES_HOME" "${CONFIG_FILES_TO_REMOVE[@]}" "$HOME/.ssh/config"
+  backupExistingConfigurationFiles "$DOTFILES_HOME" "${CONFIG_FILES_TO_REMOVE[@]}"
   stow --dir="$DOTFILES_HOME" --target="$HOME" --simulate --restow --no-folding "${STOW_PACKAGES[@]}" ||
     logFailureAndExit "Stow preflight failed; restoring existing configurations"
   trap - EXIT
@@ -220,6 +250,7 @@ function main() {
   fi
 
   stowDotfiles "${DOTFILES_HOME}" "${STOW_FOLDERS[@]}"
+  [[ " ${STOW_FOLDERS[*]} " == *" git "* ]] && configureGitLocalConfig
   configureGpgAgent "${DOTFILES_HOME}"
   configureSshConfig "${DOTFILES_HOME}"
 

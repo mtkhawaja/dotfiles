@@ -35,3 +35,13 @@ jobs:
       # shebang, so zsh files are validated with `zsh -n` and never fed to
       # shellcheck (which can't parse them) — no auto-discovery, no ignore lists.
       - run: ./scripts/check.sh lint
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      # ubuntu-latest ships python3, git and openssh-client; zsh is for the `clone` tests.
+      - name: ensure zsh
+        run: command -v zsh >/dev/null || { sudo apt-get update && sudo apt-get install -y zsh; }
+      - run: ./scripts/check.sh test
