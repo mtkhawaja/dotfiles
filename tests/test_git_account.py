@@ -58,11 +58,19 @@ class GitAccountTest(unittest.TestCase):
         (self.home / ".gitconfig.d").mkdir()
         shutil.copy(REPO / "git/.gitconfig.d/personal.config", self.home / ".gitconfig.d")
         (self.home / ".ssh/config.d").mkdir(parents=True)
-        shutil.copy(REPO / "ssh/.ssh/config", self.home / ".ssh/config")
+        # OpenSSH resolves `~` from the passwd entry, not $HOME (macOS honours $HOME; Linux
+        # doesn't), so point the Include at the throwaway home and run ssh with -F.
+        config = (REPO / "ssh/.ssh/config").read_text()
+        (self.home / ".ssh/config").write_text(config.replace("~/.ssh/config.d/", f"{self.home}/.ssh/config.d/"))
+        shim = self.home / "bin/ssh"
+        shim.parent.mkdir()
+        shim.write_text(f'#!/bin/sh\nexec {shutil.which("ssh")} -F "$HOME/.ssh/config" "$@"\n')
+        shim.chmod(0o755)
         self.env = {
             **os.environ,
             **self.agent_env,
             "HOME": str(self.home),
+            "PATH": f"{shim.parent}{os.pathsep}{os.environ['PATH']}",
             "GIT_CONFIG_NOSYSTEM": "1",
         }
         for var in ("GIT_DIR", "GIT_WORK_TREE", "GIT_CONFIG_GLOBAL"):
