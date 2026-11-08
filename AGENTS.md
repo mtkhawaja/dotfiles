@@ -4,7 +4,7 @@ This file provides guidance to coding agents (e.g. Claude Code) when working wit
 
 ## Overview
 
-macOS dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/). Each top-level directory is a stow package
+Cross-platform (macOS and Ubuntu/WSL) dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/). Each top-level directory is a stow package
 whose contents get symlinked into `$HOME`.
 
 ## Setup
@@ -88,13 +88,14 @@ top-level entry (`config`, `*.pub`, `config.d`) inside it, never overwriting an 
 
 Tracks only the **portable** parts of `~/.claude/`: `settings.json` (model, hooks, statusLine,
 `enabledPlugins`, `extraKnownMarketplaces`, theme), a global `CLAUDE.md`, and `commands/`,
-`agents/`, `skills/`, `hooks/` (hook scripts, e.g. the `ui-check` Stop hook, which uses
-`bin/.local/bin/scripts/utility/ui-check`; it is opt-in per project, see its header). Stow uses `--no-folding` to keep runtime directories outside the repo, and
-`claude/.stow-local-ignore` excludes `skills/synced/` (Claude Code's own skill-sync output, written
-into the real `~/.claude/skills/synced/`; stowing it caused preflight conflicts);
-rerun setup after adding files to these packages. Tracking
-`settings.json` is what makes enabled plugins carry to a fresh install — Claude Code re-clones
-them from `enabledPlugins`/`extraKnownMarketplaces` on next launch.
+`agents/`, `skills/`, `hooks/`. Hook scripts include the opt-in `ui-check` Stop hook, which wraps
+`bin/.local/bin/scripts/utility/ui-check` (see its header).
+
+Stow runs with `--no-folding` so Claude Code's runtime directories stay outside the repo; rerun
+setup after adding files. `claude/.stow-local-ignore` excludes `skills/synced/`, Claude Code's own
+skill-sync output (stowing it caused preflight conflicts). Tracking `settings.json` carries enabled
+plugins to a fresh install: Claude Code re-clones them from `enabledPlugins` /
+`extraKnownMarketplaces` on next launch.
 
 **Secrets are deliberately excluded** (never placed in the package, so no `.gitignore` needed):
 `settings.local.json` (machine perms + secret `env`), `~/.claude.json` (MCP servers / OAuth /
@@ -111,7 +112,9 @@ Claude Code merges the two.
   nvm via the oh-my-zsh `nvm` plugin, completions) loads only in `.zshrc`.
 - **SSH agent**: Bitwarden desktop where installed, else the machine's own (`.zshenv`, `~/.ssh/config`;
   never add the `ssh-agent` plugin)
-- **Homebrew**: Apple Silicon only (`/opt/homebrew`); `.zshenv` sets the `brew shellenv` exports
+- **Platforms**: one config for macOS and Linux; OS-specific bits are guarded with
+  `[[ "$OSTYPE" == darwin* ]]` (zsh) or `uname -s` (`setup.sh`). Keep new config portable.
+- **Homebrew**: macOS on Apple Silicon only (`/opt/homebrew`; Linux uses apt); `.zshenv` sets the `brew shellenv` exports
   statically (faster for every shell — see the comment there)
 
 ## Adding a New Package
@@ -122,14 +125,5 @@ Claude Code merges the two.
 
 ## AeroSpace Notes
 
-Both numbered workspaces (`alt-1`…`alt-9`) and descriptively named ones coexist (`Development`, `Web`, `Tools`,
-`Research`, `Media`, `Notes`, `Communication`, `Apple`, `Bitwarden`, `Email`, plus single-letter workspaces).
-`alt-<key>` summons a workspace; `alt-shift-<key>` moves the focused window there. Service mode (`alt-shift-;`)
-provides layout reset, balance, and float-toggle shortcuts.
-
-To find an app's bundle ID for `on-window-detected` rules:
-
-```bash
-cd /Applications/Utilities
-osascript -e 'id of app "<App-Name>"'
-```
+Keybindings, workspaces and the bundle-ID lookup for `on-window-detected` rules are in
+`aerospace/README.md`.
