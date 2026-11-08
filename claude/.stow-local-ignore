@@ -1,0 +1,3 @@
+# Claude Code writes synced skills here itself; stow must never manage them.
+# (This file replaces stow's default ignore list for this package only.)
+^/\.claude/skills/synced

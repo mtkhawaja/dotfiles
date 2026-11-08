@@ -90,7 +90,9 @@ top-level entry (`config`, `*.pub`, `config.d`) inside it, never overwriting an 
 Tracks only the **portable** parts of `~/.claude/`: `settings.json` (model, hooks, statusLine,
 `enabledPlugins`, `extraKnownMarketplaces`, theme), a global `CLAUDE.md`, and `commands/`,
 `agents/`, `skills/`, `hooks/` (hook scripts, e.g. the `ui-check` Stop hook, which uses
-`bin/.local/bin/scripts/utility/ui-check`; it is opt-in per project, see its header). Stow uses `--no-folding` to keep runtime directories outside the repo;
+`bin/.local/bin/scripts/utility/ui-check`; it is opt-in per project, see its header). Stow uses `--no-folding` to keep runtime directories outside the repo, and
+`claude/.stow-local-ignore` excludes `skills/synced/` (Claude Code's own skill-sync output, written
+into the real `~/.claude/skills/synced/`; stowing it caused preflight conflicts);
 rerun setup after adding files to these packages. Tracking
 `settings.json` is what makes enabled plugins carry to a fresh install — Claude Code re-clones
 them from `enabledPlugins`/`extraKnownMarketplaces` on next launch.
