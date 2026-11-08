@@ -84,7 +84,7 @@ function stowDotfiles() {
     logPending "Attempting restow: '${folder}'"
     local stow_options=()
     # Keep application runtime state outside the repo on a fresh install.
-    if [[ "$folder" == "codex" || "$folder" == "claude" ]]; then
+    if [[ "$folder" == "claude" ]]; then
       stow_options+=(--no-folding)
     fi
     stow --target="$HOME" --restow "${stow_options[@]}" "${folder}" || logFailureAndExit "Failed to stow: '${folder}'"
@@ -206,7 +206,6 @@ function main() {
       "ccstatusline"
       "ghostty"
       "claude"
-      "codex"
     )
   fi
 
